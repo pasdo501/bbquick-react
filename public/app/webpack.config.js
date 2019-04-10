@@ -3,6 +3,7 @@
 const webpack = require("webpack");
 const path = require("path");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const BrowserSyncPlugin = require("browser-sync-webpack-plugin");
 
 let config = {
     entry: {
@@ -80,6 +81,11 @@ let config = {
         new webpack.DefinePlugin({
             __DEV__: JSON.stringify(true)
         }),
+        new BrowserSyncPlugin({
+            proxy: {
+                target: "bbquick.local",
+            }
+        })
     ],
 };
 
