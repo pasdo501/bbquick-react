@@ -98,6 +98,13 @@ class Bbquick_React_Public {
 
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/bbquick-react-public.js', array( 'jquery' ), $this->version, false );
 
+		wp_enqueue_script( "{$this->plugin_name}_react", plugin_dir_url( __FILE__ ) . 'app/assets/bundle/main.bundle.js', array(), $this->version, true );
+	}
+
+	public function react_test() {
+		?>
+			<div id="bbquick-app"></div>
+		<?php
 	}
 
 }
