@@ -25,7 +25,7 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        Testy Changes
+        Testing Watcher change
         <button onClick={this.test}>Click Me</button>
       </div>
     );

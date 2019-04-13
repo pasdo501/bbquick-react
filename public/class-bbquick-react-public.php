@@ -98,24 +98,24 @@ class Bbquick_React_Public {
 
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/bbquick-react-public.js', array( 'jquery' ), $this->version, false );
 
-		// wp_enqueue_script( "{$this->plugin_name}-app", plugin_dir_url( __FILE__ ) . 'app/assets/bundle/main.bundle.js', array(), $this->version, true );
-
 		// Testing enqueue
-		if(! in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1'])) {
-			$js_files = scandir(dirname(__FILE__) . '/app/build/static/js');
-			$react_js_to_load = '';
-			foreach($js_files as $filename) {
-				if(mb_strpos($filename, '.js') && !strpos($filename, '.js.map')) {
-					$react_js_to_load = plugin_dir_url(__FILE__) . 'app/build/static/js/' . $filename;
-					wp_enqueue_script($filename, $react_js_to_load, [], mt_rand(10, 1000), true);
-				}
-			}
+		if( ! file_exists(dirname(__FILE__) . '/app/build/static/js/' ) ) {
+			// Static directory exists = build has been run
+			$js_files = scandir(dirname(__FILE__) . '/app/build/js');
+			$js_directory = 'app/build/js/';
 		} else {
-			$react_js_to_load = 'http://bbquick.local/static/js/bundle.js';
-			wp_enqueue_script("{$this->plugin_name}-app", $react_js_to_load, [], mt_rand(10, 1000), true);
+			// Static directory doesn't exist = using Watch files
+			$js_files = scandir(dirname(__FILE__) . '/app/build/static/js');
+			$js_directory = 'app/build/static/js/';
 		}
-
-		// wp_enqueue_script("{$this->plugin_name}-app", $react_js_to_load, [], mt_rand(10, 1000), true);
+		
+		$react_js_to_load = '';
+		foreach($js_files as $key => $filename) {
+			if(mb_strpos($filename, '.js') && !strpos($filename, '.js.map')) {
+				$react_js_to_load = plugin_dir_url(__FILE__) . $js_directory . $filename;
+				wp_enqueue_script($this->plugin_name . $key, $react_js_to_load, [], mt_rand(10, 1000), true);
+			}
+		}
 	}
 
 	public function react_test() {
