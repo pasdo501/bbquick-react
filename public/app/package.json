@@ -20,7 +20,8 @@
     "react-helmet": "^5.2.0",
     "react-hot-loader": "^4.7.2",
     "react-redux": "^6.0.1",
-    "react-router-dom": "^4.3.1"
+    "react-router-dom": "^4.3.1",
+    "woocommerce-api": "^1.4.2"
   },
   "devDependencies": {
     "@babel/core": "^7.3.4",
