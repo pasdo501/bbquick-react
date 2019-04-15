@@ -55,6 +55,33 @@ class Bbquick_React_Public {
 	}
 
 	/**
+	 * Check if the current page has either the product or category base
+	 * at the **start** of the request.
+	 * 
+	 * @since    1.0.0
+	 * @access   private
+	 * 
+	 * @return bool
+	 */
+	private function is_product_or_category_page()
+	{
+		global $wp;
+		$wc_permalinks = get_option( 'woocommerce_permalinks', []);
+
+		// Check if the current request URL starts with either the category
+		// base or the product base
+		$is_category_page = array_key_exists('category_base', $wc_permalinks)
+			? mb_strpos($wp->request, trim($wc_permalinks['category_base'], '/')) === 0
+			: false;
+		
+		$is_product_page = array_key_exists('product_base', $wc_permalinks)
+			? mb_strpos($wp->request, trim($wc_permalinks['product_base'], '/')) === 0
+			: false;
+
+		return $is_category_page || $is_product_page;
+	}
+
+	/**
 	 * Register the stylesheets for the public-facing side of the site.
 	 *
 	 * @since    1.0.0
@@ -95,36 +122,24 @@ class Bbquick_React_Public {
 	 */
 	public function enqueue_scripts() {
 
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Bbquick_React_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Bbquick_React_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
-
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/bbquick-react-public.js', array( 'jquery' ), $this->version, false );
-
-		// Enqueue React app
-		if( ! file_exists( dirname( __FILE__ ) . '/app/build/static/js/' ) ) {
-			// Static directory exists = build has been run
-			$js_files = scandir( dirname( __FILE__ ) . '/app/build/js' );
-			$js_directory = 'app/build/js/';
-		} else {
-			// Static directory doesn't exist = using Watch files
-			$js_files = scandir( dirname( __FILE__ ) . '/app/build/static/js' );
-			$js_directory = 'app/build/static/js/';
-		}
-		
-		$react_js_to_load = '';
-		foreach( $js_files as $key => $filename ) {
-			if( mb_strpos( $filename, '.js' ) && !strpos( $filename, '.js.map' ) ) {
-				$react_js_to_load = plugin_dir_url( __FILE__ ) . $js_directory . $filename;
-				wp_enqueue_script( $this->plugin_name . $key, $react_js_to_load, [], mt_rand( 10, 1000 ), true );
+		if($this->is_product_or_category_page()) {
+			// Enqueue React app
+			if( ! file_exists( dirname( __FILE__ ) . '/app/build/static/js/' ) ) {
+				// Static directory exists = build has been run
+				$js_files = scandir( dirname( __FILE__ ) . '/app/build/js' );
+				$js_directory = 'app/build/js/';
+			} else {
+				// Static directory doesn't exist = using Watch files
+				$js_files = scandir( dirname( __FILE__ ) . '/app/build/static/js' );
+				$js_directory = 'app/build/static/js/';
+			}
+			
+			$react_js_to_load = '';
+			foreach( $js_files as $key => $filename ) {
+				if( mb_strpos( $filename, '.js' ) && !strpos( $filename, '.js.map' ) ) {
+					$react_js_to_load = plugin_dir_url( __FILE__ ) . $js_directory . $filename;
+					wp_enqueue_script( $this->plugin_name . $key, $react_js_to_load, [], mt_rand( 10, 1000 ), true );
+				}
 			}
 		}
 	}
@@ -167,20 +182,7 @@ class Bbquick_React_Public {
 	 * @since    1.0.0
 	 */
 	public function enqueue_react() {
-		global $wp;
-		$wc_permalinks = get_option( 'woocommerce_permalinks', []);
-
-		// Check if the current request URL starts with either the category
-		// base or the product base
-		$is_category_page = array_key_exists('category_base', $wc_permalinks)
-			? mb_strpos($wp->request, trim($wc_permalinks['category_base'], '/')) === 0
-			: false;
-		
-		$is_product_page = array_key_exists('product_base', $wc_permalinks)
-			? mb_strpos($wp->request, trim($wc_permalinks['product_base'], '/')) === 0
-			: false;
-
-		if ($is_category_page || $is_product_page) {
+		if ($this->is_product_or_category_page()) {
 			echo '<div id="bbquick-app"></div>';
 		}
 	}
