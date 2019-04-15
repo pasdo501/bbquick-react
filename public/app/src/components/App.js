@@ -6,6 +6,7 @@ import Product from "./Product";
 import Portal from "./Portal";
 
 import { getProducts, getCategories } from "../util/api";
+import { getSiblings } from "../util/helpers";
 
 class App extends Component {
 
@@ -27,6 +28,17 @@ class App extends Component {
     menuItems.forEach((item, key) => {
       const parentEl = item.parentElement;
       parentEl.removeChild(item);
+
+      parentEl.addEventListener('click', (e) => {
+        // Switch Active Menu Item on click
+        const curr = e.currentTarget;
+        const siblings = getSiblings(curr);
+
+        curr.classList.add('current-menu-item', 'uk-active');
+        siblings.forEach(node => {
+          node.classList.remove('current-menu-item', 'uk-active');
+        })
+      });
 
       // Strip any beans output HTML
       const linkTextClean = item.innerHTML.replace(/<!--.*?-->/g, '');
