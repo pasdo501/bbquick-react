@@ -1,7 +1,6 @@
 import React from "react";
 
-const Product = (props) => {
-    const { match, products } = props;
+const Product = ({ match, products }) => {
     const productSlug = match.params.slug;
 
     const product = products.find(product => product.slug === productSlug);

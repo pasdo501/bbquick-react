@@ -129,10 +129,40 @@ class Bbquick_React_Public {
 		}
 	}
 
+	/**
+	 * Mark relevant menu items with IDs to be replaced by React
+	 * Router links
+	 * 
+	 * @param array $atts
+	 * @param object $item
+	 * @param object $args
+	 * 
+	 * @since    1.0.0
+	 */
+	public function mark_menu(array $atts, object $item, object $args)
+	{
+
+		$wc_permalinks = get_option('woocommerce_permalinks', []);
+		if( ! empty($wc_permalinks) ) {
+			$category_base = array_key_exists('category_base', $wc_permalinks)
+				? $wc_permalinks['category_base']
+				: null;
+			
+			if ( $category_base && ($cat_start = mb_strpos( $atts['href'], $category_base ) ) !== false ) {
+				
+				$slug = mb_substr( $atts['href'], $cat_start + mb_strlen( $category_base ));
+				$slug = trim($slug, '/');
+				
+				$atts['id'] = "js-menu-replace-{$slug}";
+			}
+		}
+
+		return $atts;
+	}
+
 	public function react_test() {
 		?>
 			<div id="bbquick-app">
-				Test
 			</div>
 		<?php
 	}

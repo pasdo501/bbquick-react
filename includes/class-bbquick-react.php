@@ -177,6 +177,7 @@ class Bbquick_React {
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 		$this->loader->add_action( 'beans_content_prepend_markup', $plugin_public, 'react_test' );
 
+		$this->loader->add_filter( 'nav_menu_link_attributes', $plugin_public, 'mark_menu', 10, 3);
 	}
 
 	/**
