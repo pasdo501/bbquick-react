@@ -46,10 +46,12 @@ class ProductLoop extends Component {
 
     componentDidMount() {
         this.setMealsAndCategory();
+        window.scrollTo(0, 0);
     }
 
     componentDidUpdate() {
         this.setMealsAndCategory();
+        window.scrollTo(0, 0);
     }
 
     render() {

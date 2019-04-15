@@ -28,7 +28,9 @@ class App extends Component {
       const parentEl = item.parentElement;
       parentEl.removeChild(item);
 
+      // Strip any beans output HTML
       const linkTextClean = item.innerHTML.replace(/<!--.*?-->/g, '');
+      // Strip leading domain stuff (get rid of http(s):// everything up to first slash)
       const link = '/' + item.href.replace(/http[s]?:\/\/.*?\//, '');
 
       portals.push(

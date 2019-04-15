@@ -160,11 +160,29 @@ class Bbquick_React_Public {
 		return $atts;
 	}
 
-	public function react_test() {
-		?>
-			<div id="bbquick-app">
-			</div>
-		<?php
+	/**
+	 * Enqueue the React app if on the category product loop or a single product
+	 * page.
+	 * 
+	 * @since    1.0.0
+	 */
+	public function enqueue_react() {
+		global $wp;
+		$wc_permalinks = get_option( 'woocommerce_permalinks', []);
+
+		// Check if the current request URL starts with either the category
+		// base or the product base
+		$is_category_page = array_key_exists('category_base', $wc_permalinks)
+			? mb_strpos($wp->request, trim($wc_permalinks['category_base'], '/')) === 0
+			: false;
+		
+		$is_product_page = array_key_exists('product_base', $wc_permalinks)
+			? mb_strpos($wp->request, trim($wc_permalinks['product_base'], '/')) === 0
+			: false;
+
+		if ($is_category_page || $is_product_page) {
+			echo '<div id="bbquick-app"></div>';
+		}
 	}
 
 }
