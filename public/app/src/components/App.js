@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import './App.css';
+
 import ProductLoop from "./ProductLoop";
 import Product from "./Product";
 import NavMenuLinks from "./NavMenuLinks"
@@ -34,7 +34,7 @@ class App extends Component {
   }
   
   render() {
-    const { products, categories, portals } = this.state;
+    const { products, categories } = this.state;
 
     return (
       <Router>
