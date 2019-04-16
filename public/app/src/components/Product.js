@@ -5,6 +5,7 @@ const Product = ({ match, products }) => {
 
     const product = products.find(product => product.slug === productSlug);
 
+    console.log(product);
     return (
         <div>
             <div>Product Name: {product.name}</div>

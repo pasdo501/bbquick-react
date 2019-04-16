@@ -26,13 +26,10 @@ class ProductLoop extends Component {
         }
 
         const categoryMeals = products.filter(product => {
-            if (product.status !== 'publish') {
-                return false;
-            }
-
             const productCategories = product.categories.filter(category => {
                 return category.id === currentCategoryId ||
-                    categories[category.id.toString()].parent === currentCategoryId;
+                    (categories[category.id.toString()] && 
+                    categories[category.id.toString()].parent === currentCategoryId);
             });
 
             return productCategories.length > 0;
@@ -68,7 +65,7 @@ class ProductLoop extends Component {
                     {meals && meals.length ? (
                         <div className="woocommerce columns-3">
                             <p className="woocommerce-result-count">
-                                Showing 1-18 of 36 results
+                                Showing 1-18 of 36 results (Make Me Dynamic)
                             </p>
                             <ul className="products columns-3">
                                 {meals.map((meal, index) => {
@@ -87,8 +84,11 @@ class ProductLoop extends Component {
                                                     meal.slug
                                                 }`}
                                             >
-                                                <img alt={meal.images[0].alt} className="attachment-woocommerce_thumbnail size-woocommerce_thumbnail" src={meal.images[0].src} srcSet="http://bbquick.local/wp-content/uploads/bbquick-slow-roasted-beef-400x300.jpg 400w, http://bbquick.local/wp-content/uploads/bbquick-slow-roasted-beef-510x382.jpg 510w, http://bbquick.local/wp-content/uploads/bbquick-slow-roasted-beef-300x225.jpg 300w, http://bbquick.local/wp-content/uploads/bbquick-slow-roasted-beef-768x576.jpg 768w, http://bbquick.local/wp-content/uploads/bbquick-slow-roasted-beef.jpg 800w" />
-                                                {meal.name}
+                                                {/* Consider the DOM parsing lib used for photography */}
+                                                <div dangerouslySetInnerHTML={{ __html: meal.images[0] }} />
+                                                <div>{meal.name}</div>
+                                                <span className="price" dangerouslySetInnerHTML={{ __html: meal.price_html }} />
+                                                <div dangerouslySetInnerHTML={{ __html: meal.rating_html }} />
                                             </Link>
                                         </li>
                                     );

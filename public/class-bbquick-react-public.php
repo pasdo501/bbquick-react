@@ -41,6 +41,15 @@ class Bbquick_React_Public {
 	private $version;
 
 	/**
+	 * The rest base for plugin specific routes
+	 * 
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      string
+	 */
+	private $rest_base;
+
+	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    1.0.0
@@ -51,6 +60,7 @@ class Bbquick_React_Public {
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
+		$this->rest_base = "{$this->plugin_name}/v1";
 
 	}
 
@@ -139,6 +149,7 @@ class Bbquick_React_Public {
 				if( mb_strpos( $filename, '.js' ) && !strpos( $filename, '.js.map' ) ) {
 					$react_js_to_load = plugin_dir_url( __FILE__ ) . $js_directory . $filename;
 					wp_enqueue_script( $this->plugin_name . $key, $react_js_to_load, [], mt_rand( 10, 1000 ), true );
+					wp_localize_script( $this->plugin_name . $key, 'bbq_react_data', ['rest_base' => get_rest_url(null, $this->rest_base) ] );
 				}
 			}
 		}
@@ -176,15 +187,110 @@ class Bbquick_React_Public {
 	}
 
 	/**
-	 * Enqueue the React app if on the category product loop or a single product
+	 * Add the container for the React app if on the category product loop or a single product
 	 * page.
 	 * 
 	 * @since    1.0.0
 	 */
-	public function enqueue_react() {
+	public function add_react_container() 
+	{
 		if ($this->is_product_or_category_page()) {
 			echo '<div id="bbquick-app"></div>';
+		} else {
+			// Dumping Data for ease of inspection
+			// DELETE entire else clause when done
+			$categories = get_terms( ['taxonomy' => 'product_cat'] );
+			$categories = array_filter( $categories, function( $category ) {
+				return $category->slug !== 'uncategorized';
+			});
+	
+			$slugs = [];
+			foreach( $categories as $category ) {
+				$slugs[] = $category->slug;
+			}
+	
+			$product_args = [
+				'posts_per_page' => -1,
+				'post_status' => 'publish',
+				'category' => $slugs
+			];
+			$products = wc_get_products( $product_args );
+			d( $products);
+
+			foreach( $products as $product ) {
+				if($product->get_data()['slug'] === 'spag-bol') {
+					d( $product->get_data());
+					// d( $product->get_data()['attributes']['pa_ingredients']->get_data());
+					// d( $product->get_data()['attributes']['pa_meal-category']->get_data());
+				}
+			}
+	
+			// d( $products );
+			// d( $categories );
+			// d( $products[0]->get_data() );
+			// d( $products[0]->get_data()['name'] );
 		}
+	}
+
+	private function get_wc_data()
+	{
+		$categories = get_terms( ['taxonomy' => 'product_cat'] );
+		$categories = array_filter( $categories, function( $category ) {
+			return $category->slug !== 'uncategorized';
+		});
+
+		// Need category slugs for product args
+		$slugs = [];
+		foreach( $categories as $category ) {
+			$slugs[] = $category->slug;
+		}
+
+		$product_args = [
+			'posts_per_page' => -1,
+			'post_status' => 'publish',
+			'category' => $slugs
+		];
+		$raw_products = wc_get_products( $product_args );
+		$products = [];
+
+		foreach ($raw_products as $product) {
+			// Change product data layout to suit needs
+			$category_ids = $product->get_category_ids();
+			$product_categories = [];
+			foreach ($category_ids as $category_id) {
+				$product_categories[] = [
+					'id' => $category_id
+				];
+			}
+
+			$products[] = [
+				'id' => $product->id,
+				'name' => $product->get_name(),
+				'slug' => $product->get_slug(),
+				'categories' => $product_categories,
+				'images' => [
+					$product->get_image(),
+					$product->get_gallery_image_ids()
+				],
+				'price_html' => $product->get_price_html(),
+				'rating_html' => $product->get_rating_html($product->get_average_rating())
+			];
+		}
+
+		return [
+			'products' => $products,
+			'categories' => $categories
+		];
+	}
+
+	public function rest_routes()
+	{
+		register_rest_route($this->rest_base, 'wc-data', [
+			'methods' => 'GET',
+			'callback' => function() {
+				return $this->get_wc_data();
+			}
+		]);
 	}
 
 }

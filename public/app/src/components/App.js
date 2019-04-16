@@ -5,7 +5,7 @@ import ProductLoop from "./ProductLoop";
 import Product from "./Product";
 import NavMenuLinks from "./NavMenuLinks"
 
-import { getProducts, getCategories } from "../util/api";
+import { getWcData } from "../util/api";
 
 class App extends Component {
 
@@ -15,13 +15,13 @@ class App extends Component {
   }
 
   async componentDidMount() {
-      let [products, categories] = await Promise.all([
-          getProducts(),
-          getCategories()
-      ]);
+      let { products, categories } = await getWcData();
+      categories = Object.values(categories);
 
       // Turn Categories into associative array with cat IDs as keys
       categories = categories.reduce((prev, curr) => {
+          curr.id = curr.term_id;
+          delete curr.term_id;
           prev[curr.id] = curr;
 
           return prev;
@@ -31,6 +31,7 @@ class App extends Component {
           products,
           categories,
       })
+
   }
   
   render() {
