@@ -1,60 +1,17 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Route, Switch, Link } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import './App.css';
 import ProductLoop from "./ProductLoop";
 import Product from "./Product";
-import Portal from "./Portal";
+import NavMenuLinks from "./NavMenuLinks"
 
 import { getProducts, getCategories } from "../util/api";
-import { getSiblings } from "../util/helpers";
 
 class App extends Component {
 
   state = {
     products: [],
     categories: null,
-    portals: []
-  }
-
-  setupPortals = () => {
-    // Change ID to have mobile / normal differentiation
-    const menuItems = document.querySelectorAll('[id^=js-menu-replace-]');
-    if (!menuItems || ! menuItems.length) {
-      return [];
-    }
-
-    const portals = [];
-
-    menuItems.forEach((item, key) => {
-      const parentEl = item.parentElement;
-      parentEl.removeChild(item);
-
-      parentEl.addEventListener('click', (e) => {
-        // Switch Active Menu Item on click
-        const curr = e.currentTarget;
-        const siblings = getSiblings(curr);
-
-        curr.classList.add('current-menu-item', 'uk-active');
-        siblings.forEach(node => {
-          node.classList.remove('current-menu-item', 'uk-active');
-        })
-      });
-
-      // Strip any beans output HTML
-      const linkTextClean = item.innerHTML.replace(/<!--.*?-->/g, '');
-      // Strip leading domain stuff (get rid of http(s):// everything up to first slash)
-      const link = '/' + item.href.replace(/http[s]?:\/\/.*?\//, '');
-
-      portals.push(
-        <Portal key={`portal-${key}`} portalRoot={parentEl}>
-          <Link to={link}>
-            {linkTextClean}
-          </Link>
-        </Portal>
-      );
-    })
-
-    return portals;
   }
 
   async componentDidMount() {
@@ -70,12 +27,9 @@ class App extends Component {
           return prev;
       }, {})
 
-      const portals = this.setupPortals();
-
       this.setState({
           products,
           categories,
-          portals
       })
   }
   
@@ -84,6 +38,7 @@ class App extends Component {
 
     return (
       <Router>
+        <NavMenuLinks />
         {products && categories 
           ? (
             <Switch>
@@ -99,9 +54,6 @@ class App extends Component {
           ) : (
             <div>Loading ...</div>
           )}
-        {portals && portals.map(portal => (
-          portal
-        ))}
       </Router>
     );
   }
