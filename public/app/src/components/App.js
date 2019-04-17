@@ -45,7 +45,7 @@ class App extends Component {
             <Switch>
               <Route 
                 path="/meal-category/:category"
-                render={(props) => <ProductLoop {...props} products={products} categories={categories} />} 
+                render={(props) => <ProductLoop {...props} products={products} categories={categories} perPage={18} />} 
               />
               <Route
                 path="/frozen-meals/:slug"
