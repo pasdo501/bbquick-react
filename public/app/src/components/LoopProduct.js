@@ -4,21 +4,18 @@ import { Link } from "react-router-dom";
 class LoopProduct extends Component {
     render() {
         const { meal } = this.props;
-        
+        const productBase = window.bbq_react_data.product_base;
+
         return (
             <Fragment>
                 <Link
-                    to={`${window.bbq_react_data.product_base}/${meal.slug}`}
+                    to={`${productBase}/${meal.slug}`}
                     dangerouslySetInnerHTML={{
                         __html: meal.images[0],
                     }}
                 />
                 <div className="uk-flex uk-flex-column uk-flex-space-between loop-meta">
-                    <Link
-                        to={`${window.bbq_react_data.product_base}/${
-                            meal.slug
-                        }`}
-                    >
+                    <Link to={`${productBase}/${meal.slug}`}>
                         <h2 className="woocommerce-loop-product__title">
                             {meal.name}
                         </h2>

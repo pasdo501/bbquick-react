@@ -61,7 +61,7 @@ class ProductLoop extends Component {
 
     render() {
         const { meals: allMeals, categoryName, page } = this.state;
-        const { perPage } = this.props;
+        const { perPage, columns } = this.props;
 
         const resultsFrom = page === 1 ? page : 1 + perPage * (page - 1);
         const resultsTo =
@@ -82,16 +82,16 @@ class ProductLoop extends Component {
                 </header>
                 <div className="tm-article-content">
                     {meals && meals.length ? (
-                        <div className="woocommerce columns-3">
+                        <div className={`woocommerce columns-${columns}`}>
                             <p className="woocommerce-result-count">
                                 {`Showing ${resultsFrom}-${resultsTo} of ${resultsCount} results`}
                             </p>
                             <ul className="products columns-3">
                                 {meals.map((meal, index) => {
                                     const first =
-                                        index % 3 === 0 ? "first" : "";
+                                        index % columns === 0 ? "first" : "";
                                     const last =
-                                        (index + 1) % 3 === 0 ? "last" : "";
+                                        (index + 1) % columns === 0 ? "last" : "";
 
                                     return (
                                         <li
