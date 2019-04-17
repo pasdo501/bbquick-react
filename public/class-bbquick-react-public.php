@@ -133,6 +133,9 @@ class Bbquick_React_Public {
 	public function enqueue_scripts() {
 
 		if($this->is_product_or_category_page()) {
+			if( ! file_exists( dirname( __FILE__ ) . '/app/build/' ) ) {
+				return;
+			}
 			// Enqueue React app
 			if( ! file_exists( dirname( __FILE__ ) . '/app/build/static/js/' ) ) {
 				// Static directory exists = build has been run
