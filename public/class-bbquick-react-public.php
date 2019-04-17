@@ -252,7 +252,8 @@ class Bbquick_React_Public {
 			'posts_per_page' => -1,
 			'post_status' => 'publish',
 			'category' => $slugs,
-			'visibility' => 'catalog'
+			'visibility' => 'catalog',
+			'stock_status' => 'instock'
 		];
 		$raw_products = wc_get_products( $product_args );
 		$products = [];
