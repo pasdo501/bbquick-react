@@ -50,6 +50,24 @@ class Bbquick_React_Public {
 	private $rest_base;
 
 	/**
+	 * The permalink base for products
+	 * 
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      string
+	 */
+	private $product_base;
+
+	/**
+	 * The permalink base for categories
+	 * 
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      string
+	 */
+	private $category_base;
+
+	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    1.0.0
@@ -57,10 +75,22 @@ class Bbquick_React_Public {
 	 * @param      string    $version    The version of this plugin.
 	 */
 	public function __construct( $plugin_name, $version ) {
+		
+		$wc_permalinks = get_option('woocommerce_permalinks', []);
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
 		$this->rest_base = "{$this->plugin_name}/v1";
+
+		if(! empty( $wc_permalinks ) ) {
+			
+			$this->product_base = array_key_exists('product_base', $wc_permalinks)
+				? $wc_permalinks['product_base']
+				: null;
+			$this->category_base = array_key_exists('category_base', $wc_permalinks)
+				? $wc_permalinks['category_base']
+				: null;
+		}
 
 	}
 
@@ -80,13 +110,9 @@ class Bbquick_React_Public {
 
 		// Check if the current request URL starts with either the category
 		// base or the product base
-		$is_category_page = array_key_exists('category_base', $wc_permalinks)
-			? mb_strpos($wp->request, trim($wc_permalinks['category_base'], '/')) === 0
-			: false;
+		$is_category_page = mb_strpos($wp->request, trim($this->category_base, '/')) === 0;
 		
-		$is_product_page = array_key_exists('product_base', $wc_permalinks)
-			? mb_strpos($wp->request, trim($wc_permalinks['product_base'], '/')) === 0
-			: false;
+		$is_product_page = mb_strpos($wp->request, trim($this->product_base, '/')) === 0;
 
 		return $is_category_page || $is_product_page;
 	}
@@ -152,7 +178,10 @@ class Bbquick_React_Public {
 				if( mb_strpos( $filename, '.js' ) && !strpos( $filename, '.js.map' ) ) {
 					$react_js_to_load = plugin_dir_url( __FILE__ ) . $js_directory . $filename;
 					wp_enqueue_script( $this->plugin_name . $key, $react_js_to_load, [], mt_rand( 10, 1000 ), true );
-					wp_localize_script( $this->plugin_name . $key, 'bbq_react_data', ['rest_base' => get_rest_url(null, $this->rest_base) ] );
+					wp_localize_script( $this->plugin_name . $key, 'bbq_react_data', [
+						'rest_base' => get_rest_url(null, $this->rest_base),
+						'product_base' => $this->product_base
+					] );
 				}
 			}
 		}
@@ -171,19 +200,13 @@ class Bbquick_React_Public {
 	public function mark_menu(array $atts, object $item, object $args)
 	{
 
-		$wc_permalinks = get_option('woocommerce_permalinks', []);
-		if( ! empty($wc_permalinks) ) {
-			$category_base = array_key_exists('category_base', $wc_permalinks)
-				? $wc_permalinks['category_base']
-				: null;
 			
-			if ( $category_base && ($cat_start = mb_strpos( $atts['href'], $category_base ) ) !== false ) {
-				
-				$slug = mb_substr( $atts['href'], $cat_start + mb_strlen( $category_base ));
-				$slug = trim($slug, '/');
-				
-				$atts['id'] = "js-menu-replace-{$slug}";
-			}
+		if ( $this->category_base && ($cat_start = mb_strpos( $atts['href'], $this->category_base ) ) !== false ) {
+			
+			$slug = mb_substr( $atts['href'], $cat_start + mb_strlen( $this->category_base ));
+			$slug = trim($slug, '/');
+			
+			$atts['id'] = "js-menu-replace-{$slug}";
 		}
 
 		return $atts;

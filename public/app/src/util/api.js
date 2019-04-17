@@ -1,5 +1,5 @@
 const apiUrl = window.bbq_react_data.rest_base;
-window.bbq_react_data = null;
+window.bbq_react_data.rest_base = null;
 
 export const getWcData = async () => {
     const url = `${apiUrl}/wc-data`;

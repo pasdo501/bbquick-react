@@ -11,7 +11,6 @@ class NavMenuLinks extends Component {
     }
 
     static getDerivedStateFromProps(props, state) {
-        console.log(state);
         if (state.portals.length) {
             return null;
         }

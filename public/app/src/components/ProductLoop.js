@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
 
+import LoopProduct from "./LoopProduct";
 import Pagination from "./Pagination";
 
 import queryString from "query-string";
@@ -98,31 +98,7 @@ class ProductLoop extends Component {
                                             key={meal.id}
                                             className={`product type-product status-publish ${last} ${first}`}
                                         >
-                                            <Link
-                                                to={`/frozen-meals/${
-                                                    meal.slug
-                                                }`}
-                                            >
-                                                {/* Consider the DOM parsing lib used for photography */}
-                                                <div
-                                                    dangerouslySetInnerHTML={{
-                                                        __html: meal.images[0],
-                                                    }}
-                                                />
-                                                <div>{meal.name}</div>
-                                                <span
-                                                    className="price"
-                                                    dangerouslySetInnerHTML={{
-                                                        __html: meal.price_html,
-                                                    }}
-                                                />
-                                                <div
-                                                    dangerouslySetInnerHTML={{
-                                                        __html:
-                                                            meal.rating_html,
-                                                    }}
-                                                />
-                                            </Link>
+                                            <LoopProduct meal={meal} />
                                         </li>
                                     );
                                 })}
