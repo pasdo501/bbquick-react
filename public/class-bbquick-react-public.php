@@ -215,7 +215,7 @@ class Bbquick_React_Public {
 			$product_args = [
 				'posts_per_page' => -1,
 				'post_status' => 'publish',
-				'category' => $slugs
+				'category' => $slugs,
 			];
 			$products = wc_get_products( $product_args );
 			d( $products);
@@ -251,7 +251,8 @@ class Bbquick_React_Public {
 		$product_args = [
 			'posts_per_page' => -1,
 			'post_status' => 'publish',
-			'category' => $slugs
+			'category' => $slugs,
+			'visibility' => 'catalog'
 		];
 		$raw_products = wc_get_products( $product_args );
 		$products = [];
