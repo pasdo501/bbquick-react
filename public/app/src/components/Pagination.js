@@ -11,7 +11,7 @@ const Pagination = ({ resultCount, currentPage, perPage, path }) => {
         pagesArray.push(page);
     }
 
-    return (
+    return totalPages === 1 ? null : (
         <nav className="woocommerce-pagination">
             <ul className="page-numbers">
                 {firstPage || (
