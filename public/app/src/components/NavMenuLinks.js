@@ -6,11 +6,19 @@ import { getSiblings } from "../util/helpers";
 
 class NavMenuLinks extends Component {
 
-    componentWillMount() {
+    state = {
+        portals: []
+    }
+
+    static getDerivedStateFromProps(props, state) {
+        console.log(state);
+        if (state.portals.length) {
+            return null;
+        }
         // Change ID to have mobile / normal differentiation
         const menuItems = document.querySelectorAll('[id^=js-menu-replace-]');
 
-        this.portals = [];
+        const portals = [];
 
         if (menuItems) {
             menuItems.forEach((item, key) => {
@@ -33,7 +41,7 @@ class NavMenuLinks extends Component {
                 // Strip leading domain stuff (get rid of http(s):// everything up to first slash)
                 const link = '/' + item.href.replace(/http[s]?:\/\/.*?\//, '');
         
-                this.portals.push(
+                portals.push(
                     <Portal key={`portal-${key}`} portalRoot={parentEl}>
                         <Link to={link}>
                             {linkTextClean}
@@ -41,13 +49,17 @@ class NavMenuLinks extends Component {
                     </Portal>
                 );
             })
+            return {
+                portals
+            }
         }
     }
 
     render() {
+        const { portals } = this.state;
         return (
             <Fragment>
-                {this.portals && this.portals.map(portal => (
+                {portals && portals.map(portal => (
                     portal
                 ))}
             </Fragment>
