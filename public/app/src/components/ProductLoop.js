@@ -134,10 +134,19 @@ class ProductLoop extends Component {
         let currentCategoryId;
         let currentCategoryName;
 
+        let otherTopLevelId;
+
         Object.keys(categories).forEach((key) => {
             if (categories[key].slug === match.params.category) {
                 currentCategoryId = categories[key].id;
                 currentCategoryName = categories[key].name;
+                return;
+            }
+
+            if (categories[key].parent === 0) {
+                // If not the category of the page currently being looked at,
+                // but no parent, must be a top level category
+                otherTopLevelId = key;
             }
         });
 
@@ -146,7 +155,12 @@ class ProductLoop extends Component {
         }
 
         const categoryMeals = products.filter((product) => {
+            let containsOtherTopLevelCat = false;
+
             const productCategories = product.categories.filter((category) => {
+                if (category.id.toString() === otherTopLevelId) {
+                    containsOtherTopLevelCat = true;
+                }
                 return (
                     category.id === currentCategoryId ||
                     (categories[category.id.toString()] &&
@@ -155,7 +169,9 @@ class ProductLoop extends Component {
                 );
             });
 
-            return productCategories.length > 0;
+            // Filter out products that are part of the other top level category,
+            // and those that are not of the current page's category (or its children)
+            return productCategories.length > 0 && !containsOtherTopLevelCat;
         });
 
         const filteredMeals = filterMeals(categoryMeals, filters);
