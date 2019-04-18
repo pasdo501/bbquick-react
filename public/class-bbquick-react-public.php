@@ -168,7 +168,7 @@ class Bbquick_React_Public {
 				$js_files = scandir( dirname( __FILE__ ) . '/app/build/js' );
 				$js_directory = 'app/build/js/';
 			} else {
-				// Static directory doesn't exist = using Watch files
+				// Static directory exists = using build files
 				$js_files = scandir( dirname( __FILE__ ) . '/app/build/static/js' );
 				$js_directory = 'app/build/static/js/';
 			}
@@ -295,6 +295,7 @@ class Bbquick_React_Public {
 				'id' => $product->id,
 				'name' => $product->get_name(),
 				'slug' => $product->get_slug(),
+				'sku' => $product->get_sku(),
 				'categories' => $product_categories,
 				'images' => [
 					$product->get_image(),
