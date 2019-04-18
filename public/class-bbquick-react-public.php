@@ -243,11 +243,30 @@ class Bbquick_React_Public {
 			$products = wc_get_products( $product_args );
 			d( $products);
 
-			foreach( $products as $product ) {
-				if($product->get_data()['slug'] === 'spag-bol') {
-					d( $product->get_data());
-					// d( $product->get_data()['attributes']['pa_ingredients']->get_data());
-					// d( $product->get_data()['attributes']['pa_meal-category']->get_data());
+			for( $i = 1; $i < count($products); $i++) {
+				if ($products[$i]->get_type() === 'bundle') {
+					$categories_added = [];
+					$product_categories = [];
+
+					$product = $products[$i];
+					$bundled_items = $product->get_bundled_items();
+					foreach ($bundled_items as $item) {
+						$category_ids = $item->get_product()->get_category_ids();
+						foreach ($category_ids as $category_id) {
+							if ( !in_array($category_id, $categories_added ) ) {
+								$product_categories[] = [
+									'id' => $category_id
+								];
+								array_push($categories_added, $category_id);
+							}
+						}
+						unset( $category_ids );
+						unset( $category_id );
+					}
+					d( $product );
+					d( $categories_added );
+					d( $product_categories );
+					break;
 				}
 			}
 			// d( $products );
@@ -286,10 +305,35 @@ class Bbquick_React_Public {
 			// Change product data layout to suit needs
 			$category_ids = $product->get_category_ids();
 			$product_categories = [];
+			$categories_added = [];
+
 			foreach ($category_ids as $category_id) {
 				$product_categories[] = [
 					'id' => $category_id
 				];
+				array_push($categories_added, $category_id);
+			}
+			unset( $category_ids );
+			unset( $category_id );
+
+			if ($product->get_type() === 'bundle') {
+				// For Bundled products, need to drill down into the bundled
+				// products to get their categories and potentially add it to the
+				// list of category IDs
+				$bundled_items = $product->get_bundled_items();
+				foreach ($bundled_items as $item) {
+					$category_ids = $item->get_product()->get_category_ids();
+					foreach ($category_ids as $category_id) {
+						if ( !in_array($category_id, $categories_added ) ) {
+							$product_categories[] = [
+								'id' => $category_id
+							];
+							array_push($categories_added, $category_id);
+						}
+					}
+					unset( $category_ids );
+					unset( $category_id );
+				}
 			}
 
 			$products[] = [
@@ -307,7 +351,7 @@ class Bbquick_React_Public {
 				'rating' => $product->get_average_rating(),
 				'rating_html' => $product->get_rating_html($product->get_average_rating()),
 				'total_sales' => $product->get_total_sales(),
-				'date' => $product->get_date_created()->getTimestamp()
+				'date' => $product->get_date_created()->getTimestamp(),
 			];
 		}
 

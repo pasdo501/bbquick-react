@@ -1,9 +1,11 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 
 import LoopProduct from "./LoopProduct";
 import Pagination from "./Pagination";
 
 import queryString from "query-string";
+import SortDropdown from "./SortDropdown";
+import ProductFilter from "./ProductFilter";
 
 const sortProducts = (meals, sortBy) => {
     let sortedMeals = [];
@@ -60,12 +62,41 @@ const sortProducts = (meals, sortBy) => {
     };
 };
 
+const filterMeals = (meals, filters) => {
+    if (!filters.length) {
+        return meals;
+    }
+
+    let mealsCopy = [...meals];
+
+    filters.forEach((filter) => {
+        const categoryId = parseInt(filter);
+        mealsCopy = mealsCopy.filter((meal) => {
+            let categoryPresent = false;
+            meal.categories.forEach((category) => {
+                if (categoryPresent) {
+                    return;
+                }
+                if (category.id === categoryId) {
+                    categoryPresent = true;
+                }
+            });
+
+            return categoryPresent;
+        });
+    });
+
+    return mealsCopy;
+};
+
 class ProductLoop extends Component {
     state = {
         meals: [],
         categoryName: "",
         page: 1,
         sortBy: "default",
+        filters: [],
+        filtersUpdated: false,
     };
 
     handleSortChange = (event) => {
@@ -80,13 +111,20 @@ class ProductLoop extends Component {
         });
     };
 
+    handleFilterUpdate = (filters) => {
+        this.setState({
+            filters,
+            filtersUpdated: true,
+        });
+    };
+
     componentDidUpdate() {
         window.scrollTo(0, 0);
     }
 
     static getDerivedStateFromProps(props, state) {
         const { products, categories, match, location } = props;
-        const { categoryName, page, sortBy } = state;
+        const { categoryName, page, sortBy, filtersUpdated, filters } = state;
 
         const qsValues = queryString.parse(location.search);
         const currentPage = qsValues["product-page"]
@@ -103,7 +141,7 @@ class ProductLoop extends Component {
             }
         });
 
-        if (currentCategoryName === categoryName) {
+        if (currentCategoryName === categoryName && !filtersUpdated) {
             return page === currentPage ? null : { page: currentPage };
         }
 
@@ -120,12 +158,15 @@ class ProductLoop extends Component {
             return productCategories.length > 0;
         });
 
-        const { sortedMeals } = sortProducts(categoryMeals, sortBy);
+        const filteredMeals = filterMeals(categoryMeals, filters);
+
+        const { sortedMeals } = sortProducts(filteredMeals, sortBy);
 
         return {
             meals: sortedMeals,
             categoryName: currentCategoryName,
             page: currentPage,
+            filtersUpdated: false,
         };
     }
 
@@ -134,12 +175,15 @@ class ProductLoop extends Component {
         const { perPage, columns } = this.props;
 
         const resultsFrom = page === 1 ? page : 1 + perPage * (page - 1);
-        const resultsTo =
-            page === 1
-                ? perPage
-                : perPage * page < allMeals.length
-                ? perPage * page
-                : allMeals.length;
+        let resultsTo;
+        if (page === 1) {
+            resultsTo = perPage < allMeals.length ? perPage : allMeals.length;
+        } else {
+            resultsTo =
+                perPage * page < allMeals.length
+                    ? perPage * page
+                    : allMeals.length;
+        }
         const resultsCount = allMeals.length;
 
         // Meals to display on the current page
@@ -156,33 +200,15 @@ class ProductLoop extends Component {
                             <p className="woocommerce-result-count">
                                 {`Showing ${resultsFrom}-${resultsTo} of ${resultsCount} results`}
                             </p>
-                            <div className="woocommerce-ordering">
-                                <select
-                                    className="orderby"
-                                    name="orderby"
-                                    value={sortBy}
-                                    onChange={this.handleSortChange}
-                                >
-                                    <option value="default">
-                                        Default sorting
-                                    </option>
-                                    <option value="popularity">
-                                        Sort by popularity
-                                    </option>
-                                    <option value="rating">
-                                        Sort by average rating
-                                    </option>
-                                    <option value="latest">
-                                        Sort by latest
-                                    </option>
-                                    <option value="price-asc">
-                                        Sort by price: low to high
-                                    </option>
-                                    <option value="price-desc">
-                                        Sort by price: high to low
-                                    </option>
-                                </select>
-                            </div>
+                            <SortDropdown
+                                value={sortBy}
+                                handleChange={this.handleSortChange}
+                            />
+                            <ProductFilter
+                                categories={this.props.categories}
+                                handleUpdate={this.handleFilterUpdate}
+                                filters={this.state.filters}
+                            />
                             <ul className="products columns-3">
                                 {meals.map((meal, index) => {
                                     const first =
@@ -209,6 +235,15 @@ class ProductLoop extends Component {
                                 path={this.props.location.pathname}
                             />
                         </div>
+                    ) : this.state.filters ? (
+                        <Fragment>
+                            <ProductFilter
+                                categories={this.props.categories}
+                                handleUpdate={this.handleFilterUpdate}
+                                filters={this.state.filters}
+                            />
+                            <div>No Meals matching</div>
+                        </Fragment>
                     ) : (
                         <div>Loading Meals ...</div>
                     )}
