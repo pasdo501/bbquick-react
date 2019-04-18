@@ -11,10 +11,11 @@ class App extends Component {
     state = {
         products: [],
         categories: null,
+        ingredients: null,
     };
 
     async componentDidMount() {
-        let { products, categories } = await getWcData();
+        let { products, categories, ingredients } = await getWcData();
         categories = Object.values(categories);
 
         // Turn Categories into associative array with cat IDs as keys
@@ -29,11 +30,12 @@ class App extends Component {
         this.setState({
             products,
             categories,
+            ingredients,
         });
     }
 
     render() {
-        const { products, categories } = this.state;
+        const { products, categories, ingredients } = this.state;
 
         return (
             <Router>
@@ -47,6 +49,7 @@ class App extends Component {
                                     {...props}
                                     products={products}
                                     categories={categories}
+                                    ingredients={ingredients}
                                     perPage={18}
                                     columns={3}
                                 />

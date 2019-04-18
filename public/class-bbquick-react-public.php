@@ -344,10 +344,12 @@ class Bbquick_React_Public {
 		$ingredient_terms = get_terms(['include' => $all_ingredient_ids]);
 		$ingredients = [];
 		foreach ($ingredient_terms as $term) {
-			$ingredients[] = [
-				'id' => $term->term_id,
-				'name' => $term->name
-			];
+			if ($term->count > 0) {
+				$ingredients[] = [
+					'id' => $term->term_id,
+					'name' => $term->name
+				];
+			}
 		}
 
 		return [

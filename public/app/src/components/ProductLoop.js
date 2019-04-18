@@ -222,6 +222,7 @@ class ProductLoop extends Component {
                             />
                             <ProductFilter
                                 categories={this.props.categories}
+                                ingredients={this.props.ingredients}
                                 handleUpdate={this.handleFilterUpdate}
                                 filters={this.state.filters}
                             />
@@ -255,6 +256,7 @@ class ProductLoop extends Component {
                         <Fragment>
                             <ProductFilter
                                 categories={this.props.categories}
+                                ingredients={this.props.ingredients}
                                 handleUpdate={this.handleFilterUpdate}
                                 filters={this.state.filters}
                             />

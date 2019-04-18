@@ -65,10 +65,11 @@ class ProductFilter extends Component {
 
     render() {
         const { visible, filters } = this.state;
+        const { ingredients, categories } = this.props;
 
         const validCategories = [];
-        Object.keys(this.props.categories).forEach((key) => {
-            const category = this.props.categories[key];
+        Object.keys(categories).forEach((key) => {
+            const category = categories[key];
 
             if (category.parent !== 0) {
                 validCategories.push(category);
@@ -134,19 +135,37 @@ class ProductFilter extends Component {
                                         ))}
                                     </div>
                                 )}
-                                <div>
-                                    <span className="filter-heading">
-                                        Ingredients
-                                    </span>
-                                    <label htmlFor="three">
-                                        <input type="checkbox" id="three" />
-                                        <span> First checkbox</span>
-                                    </label>
-                                    <label htmlFor="four">
-                                        <input type="checkbox" id="four" />
-                                        <span> Second checkbox</span>
-                                    </label>
-                                </div>
+                                {ingredients.length && (
+                                    <div>
+                                        <span className="filter-heading">
+                                            Ingredients
+                                        </span>
+                                        {ingredients.map((ingredient) => (
+                                            <label
+                                                htmlFor={ingredient.id}
+                                                key={ingredient.id}
+                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    id={ingredient.id}
+                                                    onChange={() =>
+                                                        this.handleFilterCheck(
+                                                            ingredient.id
+                                                        )
+                                                    }
+                                                    checked={
+                                                        filters[ingredient.id]
+                                                            ? true
+                                                            : false
+                                                    }
+                                                />
+                                                <span className="filter-name">
+                                                    {ingredient.name}
+                                                </span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
