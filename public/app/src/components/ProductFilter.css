@@ -1,5 +1,5 @@
-.multiselect {
-    width: 200px;
+.mulitselect {
+    margin-left: auto;
 }
 
 .selectBox {
@@ -62,6 +62,14 @@
     cursor: pointer;
 }
 
-.checkboxes div label:hover {
+
+.clear {
+    float: right;
+    display: block;
+    padding: 0.5em;
+    cursor: pointer;
+}
+
+.checkboxes div label:hover, .clear:hover {
     background-color: #dadada;
 }

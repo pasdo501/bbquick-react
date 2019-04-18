@@ -10,12 +10,12 @@ class ProductFilter extends Component {
     componentDidMount() {
         // Initialise filters with already existing selection
         const filters = {};
-        this.props.filters.forEach(filter => {
+        this.props.filters.forEach((filter) => {
             filters[filter] = 1;
         });
 
         this.setState({
-            filters
+            filters,
         });
     }
 
@@ -37,6 +37,12 @@ class ProductFilter extends Component {
 
         this.setState({
             filters: filtersClone,
+        });
+    };
+
+    clearFilters = () => {
+        this.setState({
+            filters: {},
         });
     };
 
@@ -69,11 +75,18 @@ class ProductFilter extends Component {
             }
         });
 
+        const numFiltersSelected = Object.keys(filters).length;
+
         return (
-            <div className="mulitselect uk-margin-bottom">
+            <div className="mulitselect uk-margin-bottom uk-width-small-1-2 uk-width-1-1">
                 <div className="selectBox" onClick={this.toggleSelect}>
                     <select>
-                        <option>Product Filters{Object.keys(filters).length ? `  (${Object.keys(filters).length} selected)` : ''}</option>
+                        <option>
+                            Product Filters
+                            {numFiltersSelected
+                                ? `  (${numFiltersSelected} selected)`
+                                : ""}
+                        </option>
                     </select>
                     <div className="overSelect" />
                 </div>
@@ -83,6 +96,15 @@ class ProductFilter extends Component {
                             <div className="checkboxes-inner">
                                 {validCategories.length && (
                                     <div>
+                                        {numFiltersSelected ? (
+                                            <span
+                                                onClick={this.clearFilters}
+                                                className="clear"
+                                            >
+                                                <i className="uk-icon-rotate-left" />{" "}
+                                                Clear Filters
+                                            </span>
+                                        ) : null}
                                         <span className="filter-heading">
                                             Categories
                                         </span>
