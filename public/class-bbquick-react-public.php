@@ -222,57 +222,56 @@ class Bbquick_React_Public {
 	{
 		if ($this->is_product_or_category_page()) {
 			echo '<div id="bbquick-app"></div>';
-		} else {
-			// Dumping Data for ease of inspection
-			// DELETE entire else clause when done
-			$categories = get_terms( ['taxonomy' => 'product_cat'] );
-			$categories = array_filter( $categories, function( $category ) {
-				return $category->slug !== 'uncategorized';
-			});
-	
-			$slugs = [];
-			foreach( $categories as $category ) {
-				$slugs[] = $category->slug;
+		}
+	}
+
+	/**
+	 * Get ingredient IDs from WooCommerce products.
+	 * 
+	 * @param $product A WooCommerce product
+	 * @param &$id_array Reference to an array where IDs are stored
+	 * 
+	 * @return void
+	 */
+	private function get_product_ingredient_ids($product, &$id_array)
+	{
+		$attributes = $product->get_attributes();
+		if( $attributes && array_key_exists('pa_ingredients', $attributes ) ) {
+			$ingredient_ids = $attributes['pa_ingredients']->get_options();
+			foreach ($ingredient_ids as $ingredient_id) {
+				$id_array[$ingredient_id] = $ingredient_id;
 			}
-	
-			$product_args = [
-				'posts_per_page' => -1,
-				'post_status' => 'publish',
-				'category' => $slugs,
-			];
-			$products = wc_get_products( $product_args );
-			d( $products);
+		}
+	}
 
-			for( $i = 1; $i < count($products); $i++) {
-				if ($products[$i]->get_type() === 'bundle') {
-					$categories_added = [];
-					$product_categories = [];
-
-					$product = $products[$i];
-					$bundled_items = $product->get_bundled_items();
-					foreach ($bundled_items as $item) {
-						$category_ids = $item->get_product()->get_category_ids();
-						foreach ($category_ids as $category_id) {
-							if ( !in_array($category_id, $categories_added ) ) {
-								$product_categories[] = [
-									'id' => $category_id
-								];
-								array_push($categories_added, $category_id);
-							}
-						}
-						unset( $category_ids );
-						unset( $category_id );
-					}
-					d( $product );
-					d( $categories_added );
-					d( $product_categories );
-					break;
+	/**
+	 * Get product categories from bundled WooCommerce products.
+	 * 
+	 * @param $product A bundled WooCommerce product
+	 * @param &$product_categories An array of product categories
+	 * @param &$categories_added An array keeping track of which categories have been added (easier due to the shape of the other array)
+	 * @param &$ingredient_ids An array of ingredient IDs, passed to the product ingredient extraction method
+	 * 
+	 * @return void
+	 */
+	private function get_bundled_product_categories($product, &$product_categories, &$categories_added, &$ingredients_ids)
+	{
+		// For Bundled products, need to drill down into the bundled
+		// products to get their categories and potentially add it to the
+		// list of category IDs
+		$bundled_items = $product->get_bundled_items();
+		foreach ($bundled_items as $item) {
+			$product = $item->get_product();
+			$category_ids = $product->get_category_ids();
+			$this->get_product_ingredient_ids($product, $ingredients_ids);
+			foreach ($category_ids as $category_id) {
+				if ( !in_array($category_id, $categories_added ) ) {
+					$product_categories[] = [
+						'id' => $category_id
+					];
+					array_push($categories_added, $category_id);
 				}
 			}
-			// d( $products );
-			// d( $categories );
-			// d( $products[0]->get_data() );
-			// d( $products[0]->get_data()['name'] );
 		}
 	}
 
@@ -300,6 +299,7 @@ class Bbquick_React_Public {
 		];
 		$raw_products = wc_get_products( $product_args );
 		$products = [];
+		$all_ingredient_ids = [];
 
 		foreach ($raw_products as $product) {
 			// Change product data layout to suit needs
@@ -316,24 +316,10 @@ class Bbquick_React_Public {
 			unset( $category_ids );
 			unset( $category_id );
 
+			$this->get_product_ingredient_ids($product, $all_ingredient_ids);
+
 			if ($product->get_type() === 'bundle') {
-				// For Bundled products, need to drill down into the bundled
-				// products to get their categories and potentially add it to the
-				// list of category IDs
-				$bundled_items = $product->get_bundled_items();
-				foreach ($bundled_items as $item) {
-					$category_ids = $item->get_product()->get_category_ids();
-					foreach ($category_ids as $category_id) {
-						if ( !in_array($category_id, $categories_added ) ) {
-							$product_categories[] = [
-								'id' => $category_id
-							];
-							array_push($categories_added, $category_id);
-						}
-					}
-					unset( $category_ids );
-					unset( $category_id );
-				}
+				$this->get_bundled_product_categories($product, $product_categories, $categories_added, $all_ingredient_ids);
 			}
 
 			$products[] = [
@@ -355,9 +341,19 @@ class Bbquick_React_Public {
 			];
 		}
 
+		$ingredient_terms = get_terms(['include' => $all_ingredient_ids]);
+		$ingredients = [];
+		foreach ($ingredient_terms as $term) {
+			$ingredients[] = [
+				'id' => $term->term_id,
+				'name' => $term->name
+			];
+		}
+
 		return [
 			'products' => $products,
-			'categories' => $categories
+			'categories' => $categories,
+			'ingredients' => $ingredients
 		];
 	}
 
