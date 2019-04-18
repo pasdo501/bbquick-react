@@ -5,12 +5,60 @@ import Pagination from "./Pagination";
 
 import queryString from "query-string";
 
+const sortProducts = (meals, sortBy) => {
+    let sortedMeals = [];
+
+    switch (sortBy) {
+        case 'popularity':
+            sortedMeals = meals.sort((a, b) => b.total_sales - a.total_sales);
+            break;
+        case 'rating':
+        case 'latest':
+        case 'price-asc':
+        case 'price-desc':
+            console.log(`Sorting by ${sortBy}`);
+            break;
+        case 'default':
+        default:
+            sortedMeals = meals.sort((a, b) => {
+                const x = a.name.toLowerCase();
+                const y = b.name.toLowerCase();
+                if (x < y) {
+                    return -1;
+                }
+                if (x > y) {
+                    return 1;
+                }
+                return 0;
+            });
+            break;
+    }
+
+    return {
+        sortedMeals: sortedMeals.length ? sortedMeals : meals,
+        sortBy
+    }
+}
+
 class ProductLoop extends Component {
     state = {
         meals: [],
         categoryName: "",
         page: 1,
+        sortBy: 'default',
     };
+
+    handleSortChange = (event) => {
+        const sortingMethod = event.target.value;
+        const { meals } = this.state;
+
+        const { sortedMeals, sortBy } = sortProducts(meals, sortingMethod);
+
+        this.setState({
+            meals: sortedMeals,
+            sortBy
+        })
+    }
 
     componentDidUpdate() {
         window.scrollTo(0, 0);
@@ -18,7 +66,7 @@ class ProductLoop extends Component {
 
     static getDerivedStateFromProps(props, state) {
         const { products, categories, match, location } = props;
-        const { categoryName, page } = state;
+        const { categoryName, page, sortBy } = state;
 
         const qsValues = queryString.parse(location.search);
         const currentPage = qsValues["product-page"]
@@ -52,15 +100,17 @@ class ProductLoop extends Component {
             return productCategories.length > 0;
         });
 
+        const { sortedMeals } = sortProducts(categoryMeals, sortBy);
+
         return {
-            meals: categoryMeals,
+            meals: sortedMeals,
             categoryName: currentCategoryName,
             page: currentPage,
         };
     }
 
     render() {
-        const { meals: allMeals, categoryName, page } = this.state;
+        const { meals: allMeals, categoryName, page, sortBy } = this.state;
         const { perPage, columns } = this.props;
 
         const resultsFrom = page === 1 ? page : 1 + perPage * (page - 1);
@@ -86,6 +136,16 @@ class ProductLoop extends Component {
                             <p className="woocommerce-result-count">
                                 {`Showing ${resultsFrom}-${resultsTo} of ${resultsCount} results`}
                             </p>
+                            <div className="woocommerce-ordering">
+                                <select className="orderby" name="orderby" value={sortBy} onChange={this.handleSortChange}>
+                                    <option value="default">Default sorting</option>
+                                    <option value="popularity">Sort by popularity</option>
+                                    <option value="rating">Sort by average rating</option>
+                                    <option value="latest">Sort by latest</option>
+                                    <option value="price-asc">Sort by price: low to high</option>
+                                    <option value="price-desc">Sort by price: high to low</option>
+                                </select>
+                            </div>
                             <ul className="products columns-3">
                                 {meals.map((meal, index) => {
                                     const first =

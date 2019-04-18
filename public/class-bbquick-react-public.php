@@ -250,7 +250,6 @@ class Bbquick_React_Public {
 					// d( $product->get_data()['attributes']['pa_meal-category']->get_data());
 				}
 			}
-	
 			// d( $products );
 			// d( $categories );
 			// d( $products[0]->get_data() );
@@ -276,7 +275,9 @@ class Bbquick_React_Public {
 			'post_status' => 'publish',
 			'category' => $slugs,
 			'visibility' => 'catalog',
-			'stock_status' => 'instock'
+			'stock_status' => 'instock',
+			'orderby' => 'name',
+			'order' => 'ASC'
 		];
 		$raw_products = wc_get_products( $product_args );
 		$products = [];
@@ -302,7 +303,8 @@ class Bbquick_React_Public {
 					$product->get_gallery_image_ids()
 				],
 				'price_html' => $product->get_price_html(),
-				'rating_html' => $product->get_rating_html($product->get_average_rating())
+				'rating_html' => $product->get_rating_html($product->get_average_rating()),
+				'total_sales' => $product->get_total_sales()
 			];
 		}
 
