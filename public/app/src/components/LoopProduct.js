@@ -80,6 +80,7 @@ class LoopProduct extends Component {
         }
 
         if (response.ok) {
+            const responseBody = await response.json();
             const addedEvent = new CustomEvent("added_to_cart", [
                 response.fragments,
                 response.cart_hash,
@@ -87,13 +88,16 @@ class LoopProduct extends Component {
             ]);
             document.body.dispatchEvent(addedEvent);
             thisButton.classList.remove("loading");
-            thisButton.classList.add("added");
-            if (this.timeout) {
-                window.clearTimeout(this.timeout);
+            if (! responseBody.error) {
+                thisButton.classList.add("added");
+
+                if (this.timeout) {
+                    window.clearTimeout(this.timeout);
+                }
+                this.timeout = window.setTimeout(() => {
+                    thisButton.classList.remove("added");
+                }, 5000);
             }
-            this.timeout = window.setTimeout(() => {
-                thisButton.classList.remove("added");
-            }, 5000);
         } else {
             thisButton.classList.remove("loading");
         }
@@ -125,9 +129,7 @@ class LoopProduct extends Component {
                 />
                 <div className="uk-flex uk-flex-column uk-flex-space-between loop-meta">
                     <Link to={`${productBase}/${slug}`}>
-                        <h2 className="woocommerce-loop-product__title">
-                            {name}
-                        </h2>
+                        <h2 className="woocommerce-loop-product__title" dangerouslySetInnerHTML={{ __html: name }} />
                         <div
                             dangerouslySetInnerHTML={{
                                 __html: rating_html,
