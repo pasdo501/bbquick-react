@@ -302,9 +302,12 @@ class Bbquick_React_Public {
 					$product->get_image(),
 					$product->get_gallery_image_ids()
 				],
+				'price' => $product->get_price(),
 				'price_html' => $product->get_price_html(),
+				'rating' => $product->get_average_rating(),
 				'rating_html' => $product->get_rating_html($product->get_average_rating()),
-				'total_sales' => $product->get_total_sales()
+				'total_sales' => $product->get_total_sales(),
+				'date' => $product->get_date_created()->getTimestamp()
 			];
 		}
 

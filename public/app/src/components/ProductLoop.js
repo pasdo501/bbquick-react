@@ -8,18 +8,38 @@ import queryString from "query-string";
 const sortProducts = (meals, sortBy) => {
     let sortedMeals = [];
 
+    // Use ID as tie breaker (as per WooCommerce implementation)
     switch (sortBy) {
-        case 'popularity':
-            sortedMeals = meals.sort((a, b) => b.total_sales - a.total_sales);
+        case "popularity":
+            sortedMeals = meals.sort((a, b) => {
+                const salesDiff = b.total_sales - a.total_sales;
+                return salesDiff !== 0 ? salesDiff : a.id - b.id;
+            });
             break;
-        case 'rating':
-        case 'latest':
-        case 'price-asc':
-        case 'price-desc':
-            console.log(`Sorting by ${sortBy}`);
+        case "rating":
+            sortedMeals = meals.sort((a, b) => {
+                const ratingDiff = parseFloat(b.rating) - parseFloat(a.rating);
+                return ratingDiff !== 0 ? ratingDiff : a.id - b.id;
+            });
             break;
-        case 'default':
+        case "latest":
+            sortedMeals = meals.sort((a, b) => b.date - a.date);
+            break;
+        case "price-asc":
+            sortedMeals = meals.sort((a, b) => {
+                const priceDiff = parseFloat(a.price) - parseFloat(b.price);
+                return priceDiff !== 0 ? priceDiff : a.id - b.id;
+            });
+            break;
+        case "price-desc":
+            sortedMeals = meals.sort((a, b) => {
+                const priceDiff = parseFloat(b.price) - parseFloat(a.price);
+                return priceDiff !== 0 ? priceDiff : a.id - b.id;
+            });
+            break;
+        case "default":
         default:
+            // Default = Alphabetical
             sortedMeals = meals.sort((a, b) => {
                 const x = a.name.toLowerCase();
                 const y = b.name.toLowerCase();
@@ -36,16 +56,16 @@ const sortProducts = (meals, sortBy) => {
 
     return {
         sortedMeals: sortedMeals.length ? sortedMeals : meals,
-        sortBy
-    }
-}
+        sortBy,
+    };
+};
 
 class ProductLoop extends Component {
     state = {
         meals: [],
         categoryName: "",
         page: 1,
-        sortBy: 'default',
+        sortBy: "default",
     };
 
     handleSortChange = (event) => {
@@ -56,9 +76,9 @@ class ProductLoop extends Component {
 
         this.setState({
             meals: sortedMeals,
-            sortBy
-        })
-    }
+            sortBy,
+        });
+    };
 
     componentDidUpdate() {
         window.scrollTo(0, 0);
@@ -137,13 +157,30 @@ class ProductLoop extends Component {
                                 {`Showing ${resultsFrom}-${resultsTo} of ${resultsCount} results`}
                             </p>
                             <div className="woocommerce-ordering">
-                                <select className="orderby" name="orderby" value={sortBy} onChange={this.handleSortChange}>
-                                    <option value="default">Default sorting</option>
-                                    <option value="popularity">Sort by popularity</option>
-                                    <option value="rating">Sort by average rating</option>
-                                    <option value="latest">Sort by latest</option>
-                                    <option value="price-asc">Sort by price: low to high</option>
-                                    <option value="price-desc">Sort by price: high to low</option>
+                                <select
+                                    className="orderby"
+                                    name="orderby"
+                                    value={sortBy}
+                                    onChange={this.handleSortChange}
+                                >
+                                    <option value="default">
+                                        Default sorting
+                                    </option>
+                                    <option value="popularity">
+                                        Sort by popularity
+                                    </option>
+                                    <option value="rating">
+                                        Sort by average rating
+                                    </option>
+                                    <option value="latest">
+                                        Sort by latest
+                                    </option>
+                                    <option value="price-asc">
+                                        Sort by price: low to high
+                                    </option>
+                                    <option value="price-desc">
+                                        Sort by price: high to low
+                                    </option>
                                 </select>
                             </div>
                             <ul className="products columns-3">
@@ -151,7 +188,9 @@ class ProductLoop extends Component {
                                     const first =
                                         index % columns === 0 ? "first" : "";
                                     const last =
-                                        (index + 1) % columns === 0 ? "last" : "";
+                                        (index + 1) % columns === 0
+                                            ? "last"
+                                            : "";
 
                                     return (
                                         <li
