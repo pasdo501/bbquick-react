@@ -267,7 +267,9 @@ class ProductLoop extends Component {
                                 handleUpdate={this.handleFilterUpdate}
                                 filters={this.state.filters}
                             />
-                            <div>No Meals matching</div>
+                            <div>Looks like there are no meals matching your current filters! 
+                                Please change your filter selection to find meals.
+                            </div>
                         </Fragment>
                     ) : (
                         <div>Loading Meals ...</div>

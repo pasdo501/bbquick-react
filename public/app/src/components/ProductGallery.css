@@ -1,0 +1,16 @@
+.zoomImg {
+    position: absolute;
+    width: 800px !important;
+    height: 600px !important;
+    left: 0;
+    top: 0;
+    border: medium none;
+    max-width: none !important;
+    max-height: none !important;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+
+.zoomImg.active {
+    opacity: 1 !important;
+}
