@@ -239,7 +239,8 @@ class Bbquick_React_Public {
 		if( $attributes && array_key_exists('pa_ingredients', $attributes ) ) {
 			$ingredient_ids = $attributes['pa_ingredients']->get_options();
 			foreach ($ingredient_ids as $ingredient_id) {
-				$id_array[$ingredient_id] = $ingredient_id;
+				$id_array['all'][$ingredient_id] = $ingredient_id;
+				$id_array[$product->id][$ingredient_id] = $ingredient_id;
 			}
 		}
 	}
@@ -248,13 +249,14 @@ class Bbquick_React_Public {
 	 * Get product categories from bundled WooCommerce products.
 	 * 
 	 * @param $product A bundled WooCommerce product
+	 * @param $individual_meals_cat_id The ID of the indivdual meal category
 	 * @param &$product_categories An array of product categories
 	 * @param &$categories_added An array keeping track of which categories have been added (easier due to the shape of the other array)
 	 * @param &$ingredient_ids An array of ingredient IDs, passed to the product ingredient extraction method
 	 * 
 	 * @return void
 	 */
-	private function get_bundled_product_categories($product, &$product_categories, &$categories_added, &$ingredients_ids)
+	private function get_bundled_product_categories($product, $individual_meals_cat_id, &$product_categories, &$categories_added, &$ingredients_ids)
 	{
 		// For Bundled products, need to drill down into the bundled
 		// products to get their categories and potentially add it to the
@@ -265,7 +267,8 @@ class Bbquick_React_Public {
 			$category_ids = $product->get_category_ids();
 			$this->get_product_ingredient_ids($product, $ingredients_ids);
 			foreach ($category_ids as $category_id) {
-				if ( !in_array($category_id, $categories_added ) ) {
+				// Only add categories that are no the individual meals Id
+				if ( $category_id !== $individual_meals_cat_id && !in_array($category_id, $categories_added ) ) {
 					$product_categories[] = [
 						'id' => $category_id
 					];
@@ -284,7 +287,12 @@ class Bbquick_React_Public {
 
 		// Need category slugs for product args
 		$slugs = [];
+		$individual_meals_cat_id = -1;
 		foreach( $categories as $category ) {
+			if ($individual_meals_cat_id === -1 && $category->slug === 'a-la-carte-individual-meals') {
+				$individual_meals_cat_id = $category->term_id;
+			}
+
 			$slugs[] = $category->slug;
 		}
 
@@ -319,8 +327,12 @@ class Bbquick_React_Public {
 			$this->get_product_ingredient_ids($product, $all_ingredient_ids);
 
 			if ($product->get_type() === 'bundle') {
-				$this->get_bundled_product_categories($product, $product_categories, $categories_added, $all_ingredient_ids);
+				$this->get_bundled_product_categories($product, $individual_meals_cat_id, $product_categories, $categories_added, $all_ingredient_ids);
 			}
+
+			$product_ingredients = array_key_exists($product->id, $all_ingredient_ids)
+				? array_values($all_ingredient_ids[$product->id])
+				: [];
 
 			$products[] = [
 				'id' => $product->id,
@@ -338,10 +350,11 @@ class Bbquick_React_Public {
 				'rating_html' => $product->get_rating_html($product->get_average_rating()),
 				'total_sales' => $product->get_total_sales(),
 				'date' => $product->get_date_created()->getTimestamp(),
+				'ingredients' => $product_ingredients
 			];
 		}
 
-		$ingredient_terms = get_terms(['include' => $all_ingredient_ids]);
+		$ingredient_terms = get_terms(['include' => $all_ingredient_ids['all']]);
 		$ingredients = [];
 		foreach ($ingredient_terms as $term) {
 			if ($term->count > 0) {

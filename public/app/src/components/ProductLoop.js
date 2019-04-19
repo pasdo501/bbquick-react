@@ -70,19 +70,26 @@ const filterMeals = (meals, filters) => {
     let mealsCopy = [...meals];
 
     filters.forEach((filter) => {
-        const categoryId = parseInt(filter);
+        const filterId = parseInt(filter);
         mealsCopy = mealsCopy.filter((meal) => {
             let categoryPresent = false;
+            let ingredientPresent = false;
+
             meal.categories.forEach((category) => {
                 if (categoryPresent) {
                     return;
                 }
-                if (category.id === categoryId) {
+                if (category.id === filterId) {
                     categoryPresent = true;
                 }
             });
 
-            return categoryPresent;
+            if (!categoryPresent) {
+                // If not a category, filter might for ingredients
+                ingredientPresent = meal.ingredients.includes(filterId);
+            }
+
+            return categoryPresent || ingredientPresent;
         });
     });
 
