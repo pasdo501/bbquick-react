@@ -2,7 +2,20 @@ import React from "react";
 
 import AddToCartButton from "./AddToCartButton";
 
+import "./ProductSummary.css"
+
 const ProductSummary = ({ product }) => {
+    const scrollToReviews = () => {
+        const reviewsEl = document.getElementById('reviews');
+        const {x, y} = reviewsEl.getBoundingClientRect();
+        const scrollOptions = {
+            left: x,
+            top: y,
+            behavior: 'smooth'
+        }
+        window.scrollTo(scrollOptions);
+    }
+
     const {
         id,
         name,
@@ -21,8 +34,8 @@ const ProductSummary = ({ product }) => {
                             __html: rating_html,
                         }}
                     />
-                    <div className="woocommerce-review-link">
-                        ({rating_count} customer reviews MAKE ME A LINK)
+                    <div className="woocommerce-review-link" onClick={scrollToReviews}>
+                        ({rating_count} customer reviews)
                     </div>
                 </div>
             )}

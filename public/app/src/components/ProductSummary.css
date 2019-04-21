@@ -1,0 +1,7 @@
+.woocommerce-review-link {
+    cursor: pointer;
+}
+
+.woocommerce-review-link:hover {
+    text-decoration: underline;
+}

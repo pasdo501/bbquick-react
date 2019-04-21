@@ -180,7 +180,8 @@ class Bbquick_React_Public {
 					wp_enqueue_script( $this->plugin_name . $key, $react_js_to_load, [], mt_rand( 10, 1000 ), true );
 					wp_localize_script( $this->plugin_name . $key, 'bbq_react_data', [
 						'rest_base' => get_rest_url(null, $this->rest_base),
-						'product_base' => $this->product_base
+						'product_base' => $this->product_base,
+						'wp_url' => get_site_url()
 					] );
 				}
 			}
@@ -507,12 +508,66 @@ class Bbquick_React_Public {
 		];
 	}
 
+	private function get_reviews(WP_REST_Request $request)
+	{
+		$product_id = $request->get_url_params()['product_id'];
+		$args = ['post_type' => 'product', 'post_id' => $product_id, 'status' => 'approve', 'type' => 'review'];
+		$comments = get_comments( $args );
+		if ($comments) {
+			$comment_data = [];
+
+			foreach ($comments as $comment) {
+				$timestamp = strtotime($comment->comment_date);
+				// Force GMT + 12 in the 8601 formatted date - seems to be reverting to +00:00
+				$date_8601 = preg_replace('/\+\d\d:\d\d$/', '+12:00', date('c', $timestamp));
+				// Do not include any sensitive data here - publically visible end point
+				$comment_data[] = [
+					'id' => $comment->comment_ID,
+					'author' => $comment->comment_author,
+					'timestamp' => $timestamp,
+					'content' => $comment->comment_content,
+					'parent' => $comment->comment_parent,
+					'rating' => get_comment_meta( $comment->comment_ID, 'rating', true),
+					'date_string' => date('F j, Y \a\t g:i a', $timestamp),
+					'date_8601' => $date_8601,
+				];
+			}
+
+			return $comment_data;
+
+			// return [
+			// 	'comments' => $comments,
+			// 	'rating' => get_comment_meta( $comments[0]->comment_ID, 'rating', true) // Works
+			// ];
+			
+		} else {
+			return 404;
+		}
+	}
+
 	public function rest_routes()
 	{
 		register_rest_route($this->rest_base, 'wc-data', [
 			'methods' => 'GET',
 			'callback' => function() {
 				return $this->get_wc_data();
+			}
+		]);
+
+		register_rest_route($this->rest_base, 'reviews/(?P<product_id>\d+)', [
+			'methods' => 'GET',
+			'callback' => function($request) {
+				return $this->get_reviews($request);
+			}
+		]);
+
+		register_rest_route($this->rest_base, 'post-test', [
+			'methods' => 'POST',
+			'callback' => function($request) {
+				error_log(print_r($request->get_body_params(), true));
+				error_log(print_r($_POST, true));
+				error_log($_POST['comment']);
+				return "Success";
 			}
 		]);
 	}
