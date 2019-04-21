@@ -5,6 +5,7 @@ import ProductGallery from "./ProductGallery";
 import ProductSummary from "./ProductSummary";
 import ProductIngredients from "./ProductIngredients";
 import RelatedProducts from "./RelatedProducts";
+import Reviews from "./Reviews";
 
 const Product = ({ match, products }) => {
     const productSlug = match.params.slug;
@@ -31,6 +32,7 @@ const Product = ({ match, products }) => {
                 </div>
                 <RelatedProducts products={relatedProducts} />
             </ProductWrapper>
+            <Reviews />
         </Fragment>
     );
 };
