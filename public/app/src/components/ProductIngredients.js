@@ -35,14 +35,14 @@ const ProductIngredients = ({ ingredients }) => {
                 </Fragment>
             ) : null;
         case "string":
-            return (
+            return ingredients.length ? (
                 <Fragment>
                     <Heading>
                         <br />
                         {ingredients}
                     </Heading>
                 </Fragment>
-            );
+            ) : null;
         default:
             return null;
     }
