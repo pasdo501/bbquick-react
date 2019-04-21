@@ -222,6 +222,55 @@ class Bbquick_React_Public {
 	{
 		if ($this->is_product_or_category_page()) {
 			echo '<div id="bbquick-app"></div>';
+		} else {
+			// Dumping Data for ease of inspection
+			// DELETE entire else clause when done
+			$categories = get_terms( ['taxonomy' => 'product_cat'] );
+			$categories = array_filter( $categories, function( $category ) {
+				return $category->slug !== 'uncategorized';
+			});
+	
+			$slugs = [];
+			foreach( $categories as $category ) {
+				$slugs[] = $category->slug;
+			}
+	
+			$product_args = [
+				'posts_per_page' => -1,
+				'post_status' => 'publish',
+				'category' => $slugs,
+			];
+			$products = wc_get_products( $product_args );
+			d( $products);
+			// for( $i = 1; $i < count($products); $i++) {
+			// 	if ($products[$i]->get_type() === 'bundle') {
+			// 		$categories_added = [];
+			// 		$product_categories = [];
+			// 		$product = $products[$i];
+			// 		$bundled_items = $product->get_bundled_items();
+			// 		foreach ($bundled_items as $item) {
+			// 			$category_ids = $item->get_product()->get_category_ids();
+			// 			foreach ($category_ids as $category_id) {
+			// 				if ( !in_array($category_id, $categories_added ) ) {
+			// 					$product_categories[] = [
+			// 						'id' => $category_id
+			// 					];
+			// 					array_push($categories_added, $category_id);
+			// 				}
+			// 			}
+			// 			unset( $category_ids );
+			// 			unset( $category_id );
+			// 		}
+			// 		d( $product );
+			// 		d( $categories_added );
+			// 		d( $product_categories );
+			// 		break;
+			// 	}
+			// }
+			// d( $products );
+			// d( $categories );
+			// d( $products[0]->get_data() );
+			// d( $products[0]->get_data()['name'] );
 		}
 	}
 
@@ -276,6 +325,50 @@ class Bbquick_React_Public {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Get the image data for the single product gallery display for a given product
+	 * 
+	 * @param $product The product to get the data for
+	 * 
+	 * @return array Array containing the requested data
+	 */
+	private function get_product_image_data($product)
+	{
+		$image_data = [];
+
+		// Need the combined Main image & gallery images
+		$image_ids = array_merge(
+			[(int) $product->get_image_id()],
+			$product->get_gallery_image_ids()
+		);
+
+		foreach ($image_ids as $id) {
+			$alt_text = get_post_meta( $id, '_wp_attachment_image_alt', true);
+
+			// Get Thumbnail src (for the preview images used to navigate between full images)
+			$gallery_thumbnail = wc_get_image_size( 'gallery_thumbnail' );
+			$thumbnail_size = apply_filters( 'woocommerce_gallery_thumbnail_size', array( $gallery_thumbnail['width'], $gallery_thumbnail['height'] ) );
+			$thumbnail_src = wp_get_attachment_image_src( $id, $thumbnail_size );
+
+			// Get full image src (for the zoom image)
+			$full_size = apply_filters( 'woocommerce_gallery_full_size', apply_filters( 'woocommerce_product_thumbnails_large_size', 'full' ) );
+			$full_src = wp_get_attachment_image_src( $id, $full_size );
+
+			// Get the src set for the non zoomed product image
+			$src_set = wp_get_attachment_image_srcset( $id, [$full_src[1], $full_src[2]] );
+
+			$image_data[] = [
+				'id' => $id,
+				'thumbnail_src' => $thumbnail_src[0],
+				'full_src' => $full_src[0],
+				'src_set' => $src_set,
+				'alt' => $alt_text
+			];
+		}
+
+		return $image_data;
 	}
 
 	private function get_wc_data()
@@ -341,8 +434,8 @@ class Bbquick_React_Public {
 				'sku' => $product->get_sku(),
 				'categories' => $product_categories,
 				'images' => [
-					$product->get_image(),
-					$product->get_gallery_image_ids()
+					'loop_image' => $product->get_image(),
+					'single_product' => $this->get_product_image_data($product)
 				],
 				'price' => $product->get_price(),
 				'price_html' => $product->get_price_html(),

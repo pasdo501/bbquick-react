@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import "./ProductGallery.css";
-import ProductGalleryImage from "./ProductGalleryImage";
+import ProductGalleryImages from "./ProductGalleryImages";
 import ProductGalleryThumbnails from "./ProductGalleryThumbnails";
 
 class ProductGallery extends Component {
@@ -66,8 +66,9 @@ class ProductGallery extends Component {
                                 onMouseLeave={this.hideZoomImage}
                                 onMouseMove={this.zoomImageMove}
                             >
-                                <ProductGalleryImage
-                                    image={images[activeImageIndex]}
+                                <ProductGalleryImages
+                                    images={images}
+                                    activeIndex={activeImageIndex}
                                 />
                                 <img
                                     className={`zoomImg${
