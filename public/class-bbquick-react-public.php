@@ -371,6 +371,44 @@ class Bbquick_React_Public {
 		return $image_data;
 	}
 
+	/**
+	 * Get the information about item ingredients for a given product. Information
+	 * we are interested in are names & quantities of the bundled products, or ingredients if
+	 * it's not a product bundle.
+	 * 
+	 * @param $product The product
+	 * 
+	 * @return array|string An array containing information about name & quantities of each item in
+	 *  the bundle or a list of the ingredients as a string
+	 */
+	private function get_item_ingredient_list($product)
+	{
+
+		if ($product->get_type() !== 'bundle') {
+			$ingredients = carbon_get_post_meta($product->get_id(), 'ingredients');
+			return $ingredients ?? '';
+		}
+
+		$ingredients = [];
+		$bundled_items = $product->get_bundled_data_items();
+		foreach ($bundled_items as $item) {
+			$id = $item->get_product_id();
+			$bundled_product = wc_get_product($id);
+			$name = $bundled_product->get_title();
+			$slug = $bundled_product->get_slug();
+			$quantity = $item->get_meta('quantity_min');
+
+			$ingredients[] = [
+				'id' => $id,
+				'name' => $name,
+				'slug' => $slug,
+				'quantity' => $quantity
+			];
+		}
+
+		return $ingredients;
+	}
+
 	private function get_wc_data()
 	{
 		$categories = get_terms( ['taxonomy' => 'product_cat'] );
@@ -437,13 +475,16 @@ class Bbquick_React_Public {
 					'loop_image' => $product->get_image(),
 					'single_product' => $this->get_product_image_data($product)
 				],
+				'short_description' => $product->get_short_description(),
 				'price' => $product->get_price(),
 				'price_html' => $product->get_price_html(),
 				'rating' => $product->get_average_rating(),
+				'rating_count' => $product->get_rating_count(),
 				'rating_html' => $product->get_rating_html($product->get_average_rating()),
 				'total_sales' => $product->get_total_sales(),
 				'date' => $product->get_date_created()->getTimestamp(),
-				'ingredients' => $product_ingredients
+				'ingredients' => $product_ingredients,
+				'ingredients' => $this->get_item_ingredient_list($product)
 			];
 		}
 
