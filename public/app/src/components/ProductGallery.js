@@ -1,12 +1,14 @@
 import React, { Component } from "react";
 import "./ProductGallery.css";
+import ProductGalleryImage from "./ProductGalleryImage";
+import ProductGalleryThumbnails from "./ProductGalleryThumbnails";
 
 class ProductGallery extends Component {
     state = {
         zoomImageVisible: false,
-        throttle: null,
         x: 0,
         y: 0,
+        activeImageIndex: 0,
     };
     testRef = React.createRef();
 
@@ -26,17 +28,17 @@ class ProductGallery extends Component {
         });
     };
 
-    throttleMove = (e) => {
-        const x = e.clientX;
-        const y = e.clientY;
-
-        this.moveTest(x, y);
+    handleImageChange = (newIndex) => {
+        this.setState({
+            activeImageIndex: newIndex,
+        });
     };
 
-    moveTest = (mouseX, mouseY) => {
+    zoomImageMove = (e) => {
         const container = this.testRef.current.getBoundingClientRect();
-        const x = mouseX - container.left;
-        const y = mouseY - container.top;
+
+        const x = e.clientX - container.left;
+        const y = e.clientY - container.top;
 
         this.setState({
             x,
@@ -46,43 +48,49 @@ class ProductGallery extends Component {
 
     render() {
         const { images } = this.props;
-        const { zoomImageVisible, x, y } = this.state;
+        const { zoomImageVisible, x, y, activeImageIndex } = this.state;
 
         return (
             <div
                 className={`woocommerce-product-gallery woocommerce-product-gallery--with-images woocommerce-product-gallery--columns-4 images`}
             >
-                <figure className="woocommerce-product-gallery__wrapper">
-                    <div
-                        className="woocommerce-product-gallery__image"
-                        data-thumb="http://bbq-dev.siteisnot.live/wp-content/uploads/super_sampler_main_1-100x100.jpg"
-                        style={{ position: `relative`, overflow: `hidden` }}
-                        ref={this.testRef}
-                    >
+                <div>
+                    <figure className="woocommerce-product-gallery__wrapper">
                         <div
-                            onMouseEnter={this.showZoomImage}
-                            onMouseLeave={this.hideZoomImage}
-                            onMouseMove={this.throttleMove}
+                            className="woocommerce-product-gallery__image"
+                            style={{ position: `relative`, overflow: `hidden` }}
+                            ref={this.testRef}
                         >
                             <div
-                                dangerouslySetInnerHTML={{
-                                    __html: images[0],
-                                }}
-                            />
-                            <img
-                                className={`zoomImg${
-                                    zoomImageVisible ? " active" : ""
-                                }`}
-                                alt=""
-                                src="http://bbq-dev.siteisnot.live/wp-content/uploads/super_sampler_main_1.jpg"
-                                style={{
-                                    top: -y,
-                                    left: -x,
-                                }}
-                            />
+                                onMouseEnter={this.showZoomImage}
+                                onMouseLeave={this.hideZoomImage}
+                                onMouseMove={this.zoomImageMove}
+                            >
+                                <ProductGalleryImage
+                                    image={images[activeImageIndex]}
+                                />
+                                <img
+                                    className={`zoomImg${
+                                        zoomImageVisible ? " active" : ""
+                                    }`}
+                                    alt={images[activeImageIndex].alt}
+                                    src={images[activeImageIndex].full_src}
+                                    style={{
+                                        top: -y,
+                                        left: -x,
+                                    }}
+                                />
+                            </div>
                         </div>
-                    </div>
-                </figure>
+                    </figure>
+                </div>
+                {images.length > 1 ? (
+                    <ProductGalleryThumbnails
+                        images={images}
+                        activeIndex={activeImageIndex}
+                        handleChange={this.handleImageChange}
+                    />
+                ) : null}
             </div>
         );
     }

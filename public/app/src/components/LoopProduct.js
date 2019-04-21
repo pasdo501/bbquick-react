@@ -124,7 +124,7 @@ class LoopProduct extends Component {
                 <Link
                     to={`${productBase}/${slug}`}
                     dangerouslySetInnerHTML={{
-                        __html: images[0],
+                        __html: images.loop_image,
                     }}
                 />
                 <div className="uk-flex uk-flex-column uk-flex-space-between loop-meta">
