@@ -57,7 +57,7 @@ class ReviewForm extends Component {
             rating,
             comment,
             comment_post_ID: commentId,
-            comment_parent: replyingTo && replyingTo.id ? replyingTo.id : 0
+            comment_parent: replyingTo && replyingTo.id ? replyingTo.id : 0,
         });
 
         console.log(response);

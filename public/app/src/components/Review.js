@@ -46,7 +46,7 @@ const Review = ({ review, handleReply }) => {
                         <span
                             className="comment-reply-link"
                             aria-label={`Reply to ${author}`}
-                            onClick={() => handleReply({id, author})}
+                            onClick={() => handleReply({ id, author })}
                         >
                             Reply
                         </span>

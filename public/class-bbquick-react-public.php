@@ -223,55 +223,6 @@ class Bbquick_React_Public {
 	{
 		if ($this->is_product_or_category_page()) {
 			echo '<div id="bbquick-app"></div>';
-		} else {
-			// Dumping Data for ease of inspection
-			// DELETE entire else clause when done
-			$categories = get_terms( ['taxonomy' => 'product_cat'] );
-			$categories = array_filter( $categories, function( $category ) {
-				return $category->slug !== 'uncategorized';
-			});
-	
-			$slugs = [];
-			foreach( $categories as $category ) {
-				$slugs[] = $category->slug;
-			}
-	
-			$product_args = [
-				'posts_per_page' => -1,
-				'post_status' => 'publish',
-				'category' => $slugs,
-			];
-			$products = wc_get_products( $product_args );
-			d( $products);
-			// for( $i = 1; $i < count($products); $i++) {
-			// 	if ($products[$i]->get_type() === 'bundle') {
-			// 		$categories_added = [];
-			// 		$product_categories = [];
-			// 		$product = $products[$i];
-			// 		$bundled_items = $product->get_bundled_items();
-			// 		foreach ($bundled_items as $item) {
-			// 			$category_ids = $item->get_product()->get_category_ids();
-			// 			foreach ($category_ids as $category_id) {
-			// 				if ( !in_array($category_id, $categories_added ) ) {
-			// 					$product_categories[] = [
-			// 						'id' => $category_id
-			// 					];
-			// 					array_push($categories_added, $category_id);
-			// 				}
-			// 			}
-			// 			unset( $category_ids );
-			// 			unset( $category_id );
-			// 		}
-			// 		d( $product );
-			// 		d( $categories_added );
-			// 		d( $product_categories );
-			// 		break;
-			// 	}
-			// }
-			// d( $products );
-			// d( $categories );
-			// d( $products[0]->get_data() );
-			// d( $products[0]->get_data()['name'] );
 		}
 	}
 
@@ -533,13 +484,7 @@ class Bbquick_React_Public {
 				];
 			}
 
-			return $comment_data;
-
-			// return [
-			// 	'comments' => $comments,
-			// 	'rating' => get_comment_meta( $comments[0]->comment_ID, 'rating', true) // Works
-			// ];
-			
+			return $comment_data;			
 		} else {
 			return 404;
 		}
@@ -558,16 +503,6 @@ class Bbquick_React_Public {
 			'methods' => 'GET',
 			'callback' => function($request) {
 				return $this->get_reviews($request);
-			}
-		]);
-
-		register_rest_route($this->rest_base, 'post-test', [
-			'methods' => 'POST',
-			'callback' => function($request) {
-				error_log(print_r($request->get_body_params(), true));
-				error_log(print_r($_POST, true));
-				error_log($_POST['comment']);
-				return "Success";
 			}
 		]);
 	}
