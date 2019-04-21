@@ -6,6 +6,7 @@ import Pagination from "./Pagination";
 import queryString from "query-string";
 import SortDropdown from "./SortDropdown";
 import ProductFilter from "./ProductFilter";
+import LoopProductWrapper from "./LoopProductWrapper";
 
 const sortProducts = (meals, sortBy) => {
     let sortedMeals = [];
@@ -233,25 +234,10 @@ class ProductLoop extends Component {
                                 handleUpdate={this.handleFilterUpdate}
                                 filters={this.state.filters}
                             />
-                            <ul className="products columns-3">
-                                {meals.map((meal, index) => {
-                                    const first =
-                                        index % columns === 0 ? "first" : "";
-                                    const last =
-                                        (index + 1) % columns === 0
-                                            ? "last"
-                                            : "";
-
-                                    return (
-                                        <li
-                                            key={meal.id}
-                                            className={`product type-product status-publish ${last} ${first}`}
-                                        >
-                                            <LoopProduct meal={meal} />
-                                        </li>
-                                    );
-                                })}
-                            </ul>
+                            <LoopProductWrapper
+                                products={meals}
+                                columns={columns}
+                            />
                             <Pagination
                                 resultCount={resultsCount}
                                 perPage={perPage}
@@ -267,8 +253,10 @@ class ProductLoop extends Component {
                                 handleUpdate={this.handleFilterUpdate}
                                 filters={this.state.filters}
                             />
-                            <div>Looks like there are no meals matching your current filters! 
-                                Please change your filter selection to find meals.
+                            <div>
+                                Looks like there are no meals matching your
+                                current filters! Please change your filter
+                                selection to find meals.
                             </div>
                         </Fragment>
                     ) : (

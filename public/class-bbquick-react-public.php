@@ -484,7 +484,8 @@ class Bbquick_React_Public {
 				'total_sales' => $product->get_total_sales(),
 				'date' => $product->get_date_created()->getTimestamp(),
 				'ingredients' => $product_ingredients,
-				'ingredients' => $this->get_item_ingredient_list($product)
+				'ingredients' => $this->get_item_ingredient_list($product),
+				'related_products' => $product->get_related(4)
 			];
 		}
 

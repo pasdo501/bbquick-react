@@ -11,10 +11,8 @@ const ProductWrapper = ({ children, id, name }) => (
         </header>
         <div itemProp="articleBody">
             <div className="tm-article-content" itemProp="text">
-                <div className="product single-product">
-                    <div className="bbquick-product-wrapper">
-                        <div className="woocommerce">{children}</div>
-                    </div>
+                <div className="woocommerce">
+                    <div className="product single-product">{children}</div>
                 </div>
             </div>
         </div>
