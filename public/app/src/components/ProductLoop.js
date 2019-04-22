@@ -213,7 +213,7 @@ class ProductLoop extends Component {
         const meals = allMeals.slice(resultsFrom - 1, resultsTo);
 
         return (
-            <div>
+            <article className="uk-article uk-panel-box page type-page status-publish hentry" itemScope="itemscope" itemType="https://schema.org/CreativeWork">
                 <header>
                     <h2 className="h2 page-title">{categoryName}</h2>
                 </header>
@@ -262,7 +262,7 @@ class ProductLoop extends Component {
                         <div>Loading Meals ...</div>
                     )}
                 </div>
-            </div>
+            </article>
         );
     }
 }
