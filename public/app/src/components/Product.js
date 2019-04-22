@@ -18,8 +18,6 @@ const Product = ({ match, products }) => {
         relatedIds.includes(product.id)
     );
 
-    console.log(product);
-
     const images = product.images.single_product;
 
     return (

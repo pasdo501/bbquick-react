@@ -5,7 +5,17 @@ import { Link } from "react-router-dom";
 import "./Review.css";
 
 const Review = ({ review, handleReply }) => {
-    const { id, rating, author, date_8601, date_string, content, approved, moderator } = review;
+    const {
+        id,
+        rating,
+        author,
+        date_8601,
+        date_string,
+        content,
+        approved,
+        moderator,
+        children,
+    } = review;
     return (
         <li id={`comment-${id}`} className="review even thread-even depth-1">
             <article
@@ -66,6 +76,17 @@ const Review = ({ review, handleReply }) => {
                     </li>
                 </ul>
             </article>
+            {children && children.length ? (
+                <ul className="children">
+                    {children.map((child) => (
+                        <Review
+                            key={child.id}
+                            review={child}
+                            handleReply={handleReply}
+                        />
+                    ))}
+                </ul>
+            ) : null}
         </li>
     );
 };
