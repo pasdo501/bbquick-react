@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import "./Review.css";
 
 const Review = ({ review, handleReply }) => {
-    const { id, rating, author, date_8601, date_string, content } = review;
+    const { id, rating, author, date_8601, date_string, content, approved, moderator } = review;
     return (
         <li id={`comment-${id}`} className="review even thread-even depth-1">
             <article
@@ -31,6 +31,16 @@ const Review = ({ review, handleReply }) => {
                         itemType="https://schema.org/Person"
                     >
                         {author}
+                        {moderator ? (
+                            <span className="uk-badge uk-margin-small-left">
+                                Moderator
+                            </span>
+                        ) : null}
+                        {!approved ? (
+                            <span className="uk-badge uk-badge-warning uk-margin-small-left">
+                                Awaiting Moderation
+                            </span>
+                        ) : null}
                     </div>
                     <div className="uk-comment-meta">
                         <time dateTime={date_8601} itemProp="datePublished">

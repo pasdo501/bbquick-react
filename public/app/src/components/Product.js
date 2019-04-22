@@ -32,7 +32,7 @@ const Product = ({ match, products }) => {
                 </div>
                 <RelatedProducts products={relatedProducts} />
             </ProductWrapper>
-            <Reviews id={product.id} />
+            <Reviews id={product.id} reviewCount={product.rating_count} />
         </Fragment>
     );
 };

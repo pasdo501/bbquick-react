@@ -1,3 +1,5 @@
+import queryString from "query-string";
+
 const apiUrl = window.bbq_react_data.rest_base;
 window.bbq_react_data.rest_base = null;
 
@@ -13,11 +15,21 @@ export const getWcData = async () => {
     return false;
 };
 
-export const getReviews = async (productId) => {
-    const url = `${apiUrl}/reviews/${productId}`;
+export const getReviews = async (productId, moderationHash = null, unapprovedId = null) => {
+    let url = `${apiUrl}/reviews/${productId}`;
+    if (moderationHash && unapprovedId) {
+        url += `?unapproved=${unapprovedId}&moderation-hash=${moderationHash}`;
+    }
+
     const response = await fetch(url);
     if (response.ok) {
         const body = await response.json();
+
+        if (body.reviews_data) {
+            body.reviews_data = body.reviews_data.sort((a, b) => (
+                a.timestamp - b.timestamp
+            ))
+        }
 
         return body;
     }
@@ -32,6 +44,7 @@ export const postReview = async ({
     comment,
     comment_post_ID,
     comment_parent,
+    akismet_comment_nonce
 }) => {
     const url = `${window.bbq_react_data.wp_url}/wp-comments-post.php`;
     const payload = {
@@ -41,9 +54,16 @@ export const postReview = async ({
         comment,
         comment_post_ID,
         comment_parent,
+        // Keep Akismet happy
+        akismet_comment_nonce
     };
+
     const data = new FormData();
     Object.keys(payload).forEach((key) => {
+        if (key === "rating" && payload[key] === "") {
+            return;
+        }
+
         data.append(key, payload[key]);
     });
 
@@ -52,12 +72,17 @@ export const postReview = async ({
         body: data,
     });
 
-    console.log(response);
-    if (response.ok) {
-        const body = await response.json();
+    const {
+        "moderation-hash": moderationHash,
+        "unapproved": unapprovedId,
+    } = queryString.parse(queryString.extract(response.url));
 
-        return body;
-    }
+    const success = response.ok ? true : false;
 
-    return false;
+    return {
+        success,
+        statusText: response.statusText,
+        moderationHash,
+        unapprovedId,
+    };
 };

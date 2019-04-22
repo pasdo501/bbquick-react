@@ -174,6 +174,17 @@ class Bbquick_React_Public {
 			}
 			
 			$react_js_to_load = '';
+			$user_info = [
+				'logged_in' => false
+			];
+
+			$current_user = wp_get_current_user();
+			if ($current_user->ID !== 0) {
+				$user_info['logged_in'] = true;
+				$user_info['user_name'] = $current_user->get('display_name');
+				$user_info['logout_url'] = html_entity_decode(wp_logout_url() );
+			}
+
 			foreach( $js_files as $key => $filename ) {
 				if( mb_strpos( $filename, '.js' ) && !strpos( $filename, '.js.map' ) ) {
 					$react_js_to_load = plugin_dir_url( __FILE__ ) . $js_directory . $filename;
@@ -181,7 +192,8 @@ class Bbquick_React_Public {
 					wp_localize_script( $this->plugin_name . $key, 'bbq_react_data', [
 						'rest_base' => get_rest_url(null, $this->rest_base),
 						'product_base' => $this->product_base,
-						'wp_url' => get_site_url()
+						'wp_url' => get_site_url(),
+						'user_info' => $user_info
 					] );
 				}
 			}
@@ -461,9 +473,27 @@ class Bbquick_React_Public {
 
 	private function get_reviews(WP_REST_Request $request)
 	{
+
 		$product_id = $request->get_url_params()['product_id'];
 		$args = ['post_type' => 'product', 'post_id' => $product_id, 'status' => 'approve', 'type' => 'review'];
 		$comments = get_comments( $args );
+
+
+		$unapproved_author_email = wp_get_unapproved_comment_author_email();
+		if (mb_strlen($unapproved_author_email) > 0) {
+			$unapproved_comments = get_comments(['author_email' => $unapproved_author_email]);
+			$comments = array_merge($comments, $unapproved_comments);
+		}
+
+		/**
+		 * Akismet
+		 */
+		$akismet_comment_nonce_option = apply_filters( 'akismet_comment_nonce', get_option( 'akismet_comment_nonce' ) );
+		$nonce = '';
+		if ( $akismet_comment_nonce_option == 'true' || $akismet_comment_nonce_option == '' ) {
+			$nonce = wp_create_nonce( "akismet_comment_nonce_{$product_id}");
+		}
+		
 		if ($comments) {
 			$comment_data = [];
 
@@ -481,10 +511,15 @@ class Bbquick_React_Public {
 					'rating' => get_comment_meta( $comment->comment_ID, 'rating', true),
 					'date_string' => date('F j, Y \a\t g:i a', $timestamp),
 					'date_8601' => $date_8601,
+					'approved' => $comment->comment_approved === "1",
+					'moderator' => user_can($comment->user_id, 'moderate_comments' )
 				];
 			}
 
-			return $comment_data;			
+			return [
+				'reviews_data' => $comment_data,
+				'nonce' => $nonce
+			];
 		} else {
 			return 404;
 		}

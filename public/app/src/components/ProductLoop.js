@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from "react";
 
-import LoopProduct from "./LoopProduct";
 import Pagination from "./Pagination";
 
 import queryString from "query-string";
