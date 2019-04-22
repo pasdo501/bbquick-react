@@ -88,7 +88,7 @@ class Reviews extends Component {
                             </Fragment>
                         ) : (
                             <p className="uk-text-muted">
-                                No one has reviewed yet
+                                No one has reviewed this product yet
                             </p>
                         )}
                         <hr className="uk-article-divider" />
