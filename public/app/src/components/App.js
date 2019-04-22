@@ -43,6 +43,20 @@ class App extends Component {
                 {products && categories ? (
                     <Switch>
                         <Route
+                            exact
+                            path="/shop/"
+                            render={(props) => (
+                                <ProductLoop
+                                    {...props}
+                                    products={products}
+                                    categories={categories}
+                                    ingredients={ingredients}
+                                    perPage={18}
+                                    columns={3}
+                                />
+                            )}
+                        />
+                        <Route
                             path="/meal-category/:category"
                             render={(props) => (
                                 <ProductLoop

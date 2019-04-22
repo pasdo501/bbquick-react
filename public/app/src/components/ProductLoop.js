@@ -143,25 +143,34 @@ class ProductLoop extends Component {
 
         let otherTopLevelId;
 
-        Object.keys(categories).forEach((key) => {
-            if (categories[key].slug === match.params.category) {
-                currentCategoryId = categories[key].id;
-                currentCategoryName = categories[key].name;
-                return;
-            }
+        if (location.pathname === "/shop/") {
+            currentCategoryName = "Shop";
+        } else {
+            Object.keys(categories).forEach((key) => {
+                if (categories[key].slug === match.params.category) {
+                    currentCategoryId = categories[key].id;
+                    currentCategoryName = categories[key].name;
+                    return;
+                }
+    
+                if (categories[key].parent === 0) {
+                    // If not the category of the page currently being looked at,
+                    // but no parent, must be a top level category
+                    otherTopLevelId = key;
+                }
+            });
+        }
 
-            if (categories[key].parent === 0) {
-                // If not the category of the page currently being looked at,
-                // but no parent, must be a top level category
-                otherTopLevelId = key;
-            }
-        });
 
         if (currentCategoryName === categoryName && !filtersUpdated) {
             return page === currentPage ? null : { page: currentPage };
         }
 
         const categoryMeals = products.filter((product) => {
+            if (currentCategoryName === "Shop") {
+                return true;
+            }
+
             let containsOtherTopLevelCat = false;
 
             const productCategories = product.categories.filter((category) => {
