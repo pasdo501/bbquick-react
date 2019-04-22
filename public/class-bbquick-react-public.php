@@ -235,6 +235,9 @@ class Bbquick_React_Public {
 	{
 		if ($this->is_product_or_category_page()) {
 			echo '<div id="bbquick-app"></div>';
+			beans_modify_action_callback( 'beans_loop_template', function() {
+				return null;
+			});
 		}
 	}
 
