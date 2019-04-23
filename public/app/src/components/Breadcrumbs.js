@@ -41,7 +41,7 @@ class Breadcrumbs extends Component {
                             <li className="uk-active">{category.name}</li>
                         ) : (
                             <li>
-                                <Link to={`/meal-category/${category.slug}`}>
+                                <Link to={`/meal-category/${category.slug}/`}>
                                     {category.name}
                                 </Link>
                             </li>
