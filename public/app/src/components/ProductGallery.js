@@ -10,7 +10,8 @@ class ProductGallery extends Component {
         y: 0,
         activeImageIndex: 0,
     };
-    testRef = React.createRef();
+    wrapperRef = React.createRef();
+    zoomRef = React.createRef();
 
     zoomFunction = (event) => {
         console.log(event);
@@ -35,10 +36,18 @@ class ProductGallery extends Component {
     };
 
     zoomImageMove = (e) => {
-        const container = this.testRef.current.getBoundingClientRect();
+        const zoomImageWidth = this.zoomRef.current.clientWidth;
+        const zoomImageHeight = this.zoomRef.current.clientHeight;
+        const wrapperWidth = this.wrapperRef.current.clientWidth;
+        const wrapperHeight = this.wrapperRef.current.clientHeight;
 
-        const x = e.clientX - container.left;
-        const y = e.clientY - container.top;
+        const xRatio = (zoomImageWidth - wrapperWidth) / wrapperWidth;
+        const yRatio = (zoomImageHeight - wrapperHeight) / wrapperHeight;
+
+        const container = this.wrapperRef.current.getBoundingClientRect();
+
+        const x = (e.clientX - container.left) * xRatio;
+        const y = (e.clientY - container.top) * yRatio;
 
         this.setState({
             x,
@@ -59,7 +68,7 @@ class ProductGallery extends Component {
                         <div
                             className="woocommerce-product-gallery__image"
                             style={{ position: `relative`, overflow: `hidden` }}
-                            ref={this.testRef}
+                            ref={this.wrapperRef}
                         >
                             <div
                                 onMouseEnter={this.showZoomImage}
@@ -71,6 +80,7 @@ class ProductGallery extends Component {
                                     activeIndex={activeImageIndex}
                                 />
                                 <img
+                                    ref={this.zoomRef}
                                     className={`zoomImg${
                                         zoomImageVisible ? " active" : ""
                                     }`}
