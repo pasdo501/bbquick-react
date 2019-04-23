@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
+import NavMenuLinks from "./NavMenuLinks";
 import ProductLoop from "./ProductLoop";
 import Product from "./Product";
-import NavMenuLinks from "./NavMenuLinks";
 
 import { getWcData } from "../util/api";
 

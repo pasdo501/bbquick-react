@@ -226,7 +226,7 @@ class Bbquick_React_Public {
 
 	public function breadcrumbs_atts()
 	{
-		beans_add_attribute( 'beans_breadcrumb_item[_active]', 'class', 'test-class' );
+		beans_add_attribute( 'breadcrumb_list', 'id', 'breadcrumb-list' );
 	}
 
 	/**
@@ -418,8 +418,15 @@ class Bbquick_React_Public {
 			$categories_added = [];
 
 			foreach ($category_ids as $category_id) {
+				$category = get_term_by( 'id', $category_id, 'product_cat' );
+				while ($category->parent !== 0) {
+					$category = get_term_by( 'id', $category->parent, 'product_cat' );
+				}
+
 				$product_categories[] = [
-					'id' => $category_id
+					'id' => $category_id,
+					'name' => $category->name,
+					'slug' => $category->slug
 				];
 				array_push($categories_added, $category_id);
 			}

@@ -1,5 +1,6 @@
 import React, { Fragment } from "react";
 
+import Breadcrumbs from "./Breadcrumbs";
 import ProductWrapper from "./ProductWrapper";
 import ProductGallery from "./ProductGallery";
 import ProductSummary from "./ProductSummary";
@@ -22,6 +23,7 @@ const Product = ({ match, products }) => {
 
     return (
         <Fragment>
+            <Breadcrumbs type="product" category={product.categories[0]} />
             <ProductWrapper id={product.id} name={product.name}>
                 <div className="bbquick-product-wrapper">
                     <ProductGallery images={images} />
