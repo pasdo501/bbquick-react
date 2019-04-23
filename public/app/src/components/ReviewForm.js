@@ -103,7 +103,9 @@ class ReviewForm extends Component {
         });
 
         if (!this.validateReview()) {
-            this.submitting = false;
+            this.setState({
+                submitting: false,
+            });
             return;
         }
 
@@ -281,6 +283,11 @@ class ReviewForm extends Component {
                                             this.highlightStars(star);
                                         }}
                                         onMouseLeave={this.clearHighlight}
+                                        style={
+                                            errors["rating"]
+                                                ? { color: `red` }
+                                                : {}
+                                        }
                                     >
                                         {star}
                                     </span>
@@ -301,7 +308,7 @@ class ReviewForm extends Component {
                                 <option value="1">1</option>
                             </select>
                             {errors["rating"] ? (
-                                <p className="uk-form-help-block uk-text-danger uk-text-small uk-margin-small-bottom">
+                                <p className="uk-form-help-block uk-text-danger uk-text-small uk-margin-bottom">
                                     Please rate the product.
                                 </p>
                             ) : null}

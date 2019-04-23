@@ -439,6 +439,7 @@ class Bbquick_React_Public {
 				$this->get_bundled_product_categories($product, $individual_meals_cat_id, $product_categories, $categories_added, $all_ingredient_ids);
 			}
 
+			// Extract the product's ingredient IDs from the ingredients IDs array
 			$product_ingredients = array_key_exists($product->id, $all_ingredient_ids)
 				? array_values($all_ingredient_ids[$product->id])
 				: [];
