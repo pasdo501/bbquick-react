@@ -4,6 +4,7 @@ import Review from "./Review";
 import ReviewForm from "./ReviewForm";
 
 import { getReviews } from "../util/api";
+import Loading from "./Loading";
 
 class Reviews extends Component {
     state = {
@@ -12,6 +13,26 @@ class Reviews extends Component {
         nonce: "",
         replyingTo: {},
     };
+
+    async componentDidUpdate(prevProps, prevState) {
+        if (prevProps.id !== this.props.id) {
+            let { reviews_data: reviews, nonce } = await getReviews(
+                this.props.id
+            );
+            
+            if (reviews !== 404) {
+                this.setState({
+                    reviews,
+                    nonce
+                });
+            } else {
+                this.setState({
+                    reviews: [],
+                    nonce
+                })
+            }
+        }
+    }
 
     async componentDidMount() {
         const { reviews_data: reviews, nonce } = await getReviews(
@@ -101,7 +122,7 @@ class Reviews extends Component {
                         />
                     </Fragment>
                 ) : (
-                    <div>Reviews loading ...</div>
+                    <Loading text="Reviews loading" />
                 )}
             </div>
         );

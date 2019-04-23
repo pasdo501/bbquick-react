@@ -535,7 +535,10 @@ class Bbquick_React_Public {
 				'nonce' => $nonce
 			];
 		} else {
-			return 404;
+			return [
+				'reviews_data' => 404,
+				'nonce' => $nonce
+			];
 		}
 	}
 

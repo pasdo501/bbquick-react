@@ -55,7 +55,7 @@ export const getReviews = async (productId, moderationHash = null, unapprovedId 
     if (response.ok) {
         const body = await response.json();
 
-        if (body.reviews_data) {
+        if ( body.reviews_data && body.reviews_data !== 404) {
             body.reviews_data = body.reviews_data.sort((a, b) => (
                 a.timestamp - b.timestamp
             ))

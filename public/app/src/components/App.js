@@ -6,6 +6,7 @@ import ProductLoop from "./ProductLoop";
 import Product from "./Product";
 
 import { getWcData } from "../util/api";
+import Loading from "./Loading";
 
 class App extends Component {
     state = {
@@ -81,7 +82,7 @@ class App extends Component {
                         </Switch>
                     </Fragment>
                 ) : (
-                    <div>Loading ...</div>
+                    <Loading />
                 )}
             </Router>
         );

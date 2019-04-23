@@ -38,7 +38,7 @@ const ProductSummary = ({ product }) => {
                         className="woocommerce-review-link"
                         onClick={scrollToReviews}
                     >
-                        ({rating_count} customer reviews)
+                        ({rating_count} customer review{rating_count !== 1 ? 's' : ''})
                     </div>
                 </div>
             )}
