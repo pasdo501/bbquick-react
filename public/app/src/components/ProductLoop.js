@@ -87,7 +87,7 @@ const filterMeals = (meals, filters) => {
 
             if (!categoryPresent) {
                 // If not a category, filter might for ingredients
-                ingredientPresent = meal.ingredients.includes(filterId);
+                ingredientPresent = meal.ingredients_ids.includes(filterId);
             }
 
             return categoryPresent || ingredientPresent;

@@ -13,10 +13,6 @@ class ProductGallery extends Component {
     wrapperRef = React.createRef();
     zoomRef = React.createRef();
 
-    zoomFunction = (event) => {
-        console.log(event);
-    };
-
     showZoomImage = () => {
         this.setState({
             zoomImageVisible: true,

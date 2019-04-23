@@ -461,7 +461,7 @@ class Bbquick_React_Public {
 				'rating_html' => $product->get_rating_html($product->get_average_rating()),
 				'total_sales' => $product->get_total_sales(),
 				'date' => $product->get_date_created()->getTimestamp(),
-				'ingredients' => $product_ingredients,
+				'ingredients_ids' => $product_ingredients,
 				'ingredients' => $this->get_item_ingredient_list($product),
 				'related_products' => $product->get_related(4)
 			];
