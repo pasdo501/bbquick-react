@@ -15,6 +15,36 @@ export const getWcData = async () => {
     return false;
 };
 
+const formatReviews = (reviews) => {
+    const topLevel = [];
+    const children = [];
+
+    [...reviews].forEach((review) => {
+        if (review.parent === "0") {
+            topLevel.push(review);
+        } else {
+            children.push(review);
+        }
+    });
+
+    children.forEach((child) => {
+        let parent = topLevel.find((review) => review.id === child.parent);
+        if (!parent) {
+            parent = children.find((review) => review.id === child.parent);
+        }
+
+        if (parent) {
+            if (parent.children) {
+                parent.children.push(child);
+            } else {
+                parent.children = [child];
+            }
+        }
+    });
+
+    return topLevel;
+};
+
 export const getReviews = async (productId, moderationHash = null, unapprovedId = null) => {
     let url = `${apiUrl}/reviews/${productId}`;
     if (moderationHash && unapprovedId) {
@@ -29,6 +59,8 @@ export const getReviews = async (productId, moderationHash = null, unapprovedId 
             body.reviews_data = body.reviews_data.sort((a, b) => (
                 a.timestamp - b.timestamp
             ))
+            
+            body.reviews_data = formatReviews(body.reviews_data);
         }
 
         return body;

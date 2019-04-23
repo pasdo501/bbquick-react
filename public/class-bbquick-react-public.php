@@ -106,7 +106,6 @@ class Bbquick_React_Public {
 	private function is_product_or_category_page()
 	{
 		global $wp;
-		$wc_permalinks = get_option( 'woocommerce_permalinks', []);
 
 		// Check if the current request URL starts with either the category
 		// base or the product base
@@ -158,7 +157,7 @@ class Bbquick_React_Public {
 	 */
 	public function enqueue_scripts() {
 
-		if($this->is_product_or_category_page()) {
+		if($this->is_product_or_category_page() || is_shop()) {
 			if( ! file_exists( dirname( __FILE__ ) . '/app/build/' ) ) {
 				return;
 			}
@@ -225,6 +224,11 @@ class Bbquick_React_Public {
 		return $atts;
 	}
 
+	public function breadcrumbs_atts()
+	{
+		beans_add_attribute( 'breadcrumb_list', 'id', 'breadcrumb-list' );
+	}
+
 	/**
 	 * Add the container for the React app if on the category product loop or a single product
 	 * page.
@@ -233,8 +237,11 @@ class Bbquick_React_Public {
 	 */
 	public function add_react_container() 
 	{
-		if ($this->is_product_or_category_page()) {
+		if ($this->is_product_or_category_page() || is_shop()) {
 			echo '<div id="bbquick-app"></div>';
+			beans_modify_action_callback( 'beans_loop_template', function() {
+				return null;
+			});
 		}
 	}
 
@@ -411,8 +418,15 @@ class Bbquick_React_Public {
 			$categories_added = [];
 
 			foreach ($category_ids as $category_id) {
+				$category = get_term_by( 'id', $category_id, 'product_cat' );
+				while ($category->parent !== 0) {
+					$category = get_term_by( 'id', $category->parent, 'product_cat' );
+				}
+
 				$product_categories[] = [
-					'id' => $category_id
+					'id' => $category_id,
+					'name' => $category->name,
+					'slug' => $category->slug
 				];
 				array_push($categories_added, $category_id);
 			}

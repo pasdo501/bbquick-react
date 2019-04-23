@@ -136,10 +136,13 @@ class AddToCartButton extends Component {
                     </select>
                 </div>
                 <a
-                    className="button ajax_add_to_cart"
+                    className="button add_to_cart_button ajax_add_to_cart"
                     href={`?add-to-cart=${id}`}
                     onClick={this.addToCart}
                     rel="nofollow"
+                    data-product_id={id}
+                    data-product_sku={this.props.sku}
+                    aria-label={`Add "${name}" to your cart`}
                 >
                     Add
                 </a>

@@ -6,6 +6,7 @@ import queryString from "query-string";
 import SortDropdown from "./SortDropdown";
 import ProductFilter from "./ProductFilter";
 import LoopProductWrapper from "./LoopProductWrapper";
+import Breadcrumbs from "./Breadcrumbs";
 
 const sortProducts = (meals, sortBy) => {
     let sortedMeals = [];
@@ -140,28 +141,38 @@ class ProductLoop extends Component {
 
         let currentCategoryId;
         let currentCategoryName;
+        let currentCategorySlug;
 
         let otherTopLevelId;
 
-        Object.keys(categories).forEach((key) => {
-            if (categories[key].slug === match.params.category) {
-                currentCategoryId = categories[key].id;
-                currentCategoryName = categories[key].name;
-                return;
-            }
+        if (location.pathname === "/shop/") {
+            currentCategoryName = "Shop";
+        } else {
+            Object.keys(categories).forEach((key) => {
+                if (categories[key].slug === match.params.category) {
+                    currentCategoryId = categories[key].id;
+                    currentCategoryName = categories[key].name;
+                    currentCategorySlug = categories[key].slug;
+                    return;
+                }
 
-            if (categories[key].parent === 0) {
-                // If not the category of the page currently being looked at,
-                // but no parent, must be a top level category
-                otherTopLevelId = key;
-            }
-        });
+                if (categories[key].parent === 0) {
+                    // If not the category of the page currently being looked at,
+                    // but no parent, must be a top level category
+                    otherTopLevelId = key;
+                }
+            });
+        }
 
         if (currentCategoryName === categoryName && !filtersUpdated) {
             return page === currentPage ? null : { page: currentPage };
         }
 
         const categoryMeals = products.filter((product) => {
+            if (currentCategoryName === "Shop") {
+                return true;
+            }
+
             let containsOtherTopLevelCat = false;
 
             const productCategories = product.categories.filter((category) => {
@@ -188,13 +199,20 @@ class ProductLoop extends Component {
         return {
             meals: sortedMeals,
             categoryName: currentCategoryName,
+            categorySlug: currentCategorySlug,
             page: currentPage,
             filtersUpdated: false,
         };
     }
 
     render() {
-        const { meals: allMeals, categoryName, page, sortBy } = this.state;
+        const {
+            meals: allMeals,
+            categoryName,
+            categorySlug,
+            page,
+            sortBy,
+        } = this.state;
         const { perPage, columns } = this.props;
 
         const resultsFrom = page === 1 ? page : 1 + perPage * (page - 1);
@@ -213,56 +231,70 @@ class ProductLoop extends Component {
         const meals = allMeals.slice(resultsFrom - 1, resultsTo);
 
         return (
-            <div>
-                <header>
-                    <h2 className="h2 page-title">{categoryName}</h2>
-                </header>
-                <div className="tm-article-content">
-                    {meals && meals.length ? (
-                        <div className={`woocommerce columns-${columns}`}>
-                            <p className="woocommerce-result-count">
-                                {`Showing ${resultsFrom}-${resultsTo} of ${resultsCount} results`}
-                            </p>
-                            <SortDropdown
-                                value={sortBy}
-                                handleChange={this.handleSortChange}
-                            />
-                            <ProductFilter
-                                categories={this.props.categories}
-                                ingredients={this.props.ingredients}
-                                handleUpdate={this.handleFilterUpdate}
-                                filters={this.state.filters}
-                            />
-                            <LoopProductWrapper
-                                products={meals}
-                                columns={columns}
-                            />
-                            <Pagination
-                                resultCount={resultsCount}
-                                perPage={perPage}
-                                currentPage={page}
-                                path={this.props.location.pathname}
-                            />
-                        </div>
-                    ) : this.state.filters ? (
-                        <Fragment>
-                            <ProductFilter
-                                categories={this.props.categories}
-                                ingredients={this.props.ingredients}
-                                handleUpdate={this.handleFilterUpdate}
-                                filters={this.state.filters}
-                            />
-                            <div>
-                                Looks like there are no meals matching your
-                                current filters! Please change your filter
-                                selection to find meals.
+            <Fragment>
+                <Breadcrumbs
+                    type={
+                        categoryName.toLocaleLowerCase() === "shop"
+                            ? "shop"
+                            : "category"
+                    }
+                    category={{ name: categoryName, slug: categorySlug }}
+                />
+                <article
+                    className="uk-article uk-panel-box page type-page status-publish hentry"
+                    itemScope="itemscope"
+                    itemType="https://schema.org/CreativeWork"
+                >
+                    <header>
+                        <h2 className="h2 page-title">{categoryName}</h2>
+                    </header>
+                    <div className="tm-article-content">
+                        {meals && meals.length ? (
+                            <div className={`woocommerce columns-${columns}`}>
+                                <p className="woocommerce-result-count">
+                                    {`Showing ${resultsFrom}-${resultsTo} of ${resultsCount} results`}
+                                </p>
+                                <SortDropdown
+                                    value={sortBy}
+                                    handleChange={this.handleSortChange}
+                                />
+                                <ProductFilter
+                                    categories={this.props.categories}
+                                    ingredients={this.props.ingredients}
+                                    handleUpdate={this.handleFilterUpdate}
+                                    filters={this.state.filters}
+                                />
+                                <LoopProductWrapper
+                                    products={meals}
+                                    columns={columns}
+                                />
+                                <Pagination
+                                    resultCount={resultsCount}
+                                    perPage={perPage}
+                                    currentPage={page}
+                                    path={this.props.location.pathname}
+                                />
                             </div>
-                        </Fragment>
-                    ) : (
-                        <div>Loading Meals ...</div>
-                    )}
-                </div>
-            </div>
+                        ) : this.state.filters ? (
+                            <Fragment>
+                                <ProductFilter
+                                    categories={this.props.categories}
+                                    ingredients={this.props.ingredients}
+                                    handleUpdate={this.handleFilterUpdate}
+                                    filters={this.state.filters}
+                                />
+                                <div>
+                                    Looks like there are no meals matching your
+                                    current filters! Please change your filter
+                                    selection to find meals.
+                                </div>
+                            </Fragment>
+                        ) : (
+                            <div>Loading Meals ...</div>
+                        )}
+                    </div>
+                </article>
+            </Fragment>
         );
     }
 }

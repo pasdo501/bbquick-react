@@ -178,6 +178,7 @@ class Bbquick_React {
 		$this->loader->add_action( 'beans_content_prepend_markup', $plugin_public, 'add_react_container' );
 		$this->loader->add_action( 'rest_api_init', $plugin_public, 'rest_routes' );
 
+		$this->loader->add_action( 'init', $plugin_public, 'breadcrumbs_atts' );
 		$this->loader->add_filter( 'nav_menu_link_attributes', $plugin_public, 'mark_menu', 10, 3);
 
 	}
