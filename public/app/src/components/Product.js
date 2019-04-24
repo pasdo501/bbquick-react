@@ -35,7 +35,7 @@ const Product = ({ match, products }) => {
                 <link rel="alternate" type="text/xml+oembed" href={`${window.bbq_react_data.wp_url}/wp-json/oembed/1.0/embed?url=${encodedUrl}&format=xml`} />
             </SEO>
             <Breadcrumbs type="product" category={product.categories[0]} />
-            <ProductWrapper id={product.id} name={product.name}>
+            <ProductWrapper key={`wrapper-${product.id}`} id={product.id} name={product.name}>
                 <div className="bbquick-product-wrapper">
                     <ProductGallery
                         key={`gallery-${product.id}`}

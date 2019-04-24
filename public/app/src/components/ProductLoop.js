@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from "react";
 
 import SEO from "./SEO";
+import ProductLoopWrapper from "./ProductLoopWrapper";
 import Pagination from "./Pagination";
 
 import queryString from "query-string";
@@ -242,60 +243,51 @@ class ProductLoop extends Component {
                     }
                     category={{ name: categoryName, slug: categorySlug }}
                 />
-                <article
-                    className="uk-article uk-panel-box page type-page status-publish hentry"
-                    itemScope="itemscope"
-                    itemType="https://schema.org/CreativeWork"
-                >
-                    <header>
-                        <h2 className="h2 page-title">{categoryName}</h2>
-                    </header>
-                    <div className="tm-article-content">
-                        {meals && meals.length ? (
-                            <div className={`woocommerce columns-${columns}`}>
-                                <p className="woocommerce-result-count">
-                                    {`Showing ${resultsFrom}-${resultsTo} of ${resultsCount} results`}
-                                </p>
-                                <SortDropdown
-                                    value={sortBy}
-                                    handleChange={this.handleSortChange}
-                                />
-                                <ProductFilter
-                                    categories={this.props.categories}
-                                    ingredients={this.props.ingredients}
-                                    handleUpdate={this.handleFilterUpdate}
-                                    filters={this.state.filters}
-                                />
-                                <LoopProductWrapper
-                                    products={meals}
-                                    columns={columns}
-                                />
-                                <Pagination
-                                    resultCount={resultsCount}
-                                    perPage={perPage}
-                                    currentPage={page}
-                                    path={this.props.location.pathname}
-                                />
+                <ProductLoopWrapper key={categoryName} categoryName={categoryName}>
+                    {meals && meals.length ? (
+                        <div className={`woocommerce columns-${columns}`}>
+                            <p className="woocommerce-result-count">
+                                {`Showing ${resultsFrom}-${resultsTo} of ${resultsCount} results`}
+                            </p>
+                            <SortDropdown
+                                value={sortBy}
+                                handleChange={this.handleSortChange}
+                            />
+                            <ProductFilter
+                                categories={this.props.categories}
+                                ingredients={this.props.ingredients}
+                                handleUpdate={this.handleFilterUpdate}
+                                filters={this.state.filters}
+                            />
+                            <LoopProductWrapper
+                                products={meals}
+                                columns={columns}
+                            />
+                            <Pagination
+                                resultCount={resultsCount}
+                                perPage={perPage}
+                                currentPage={page}
+                                path={this.props.location.pathname}
+                            />
+                        </div>
+                    ) : this.state.filters ? (
+                        <Fragment>
+                            <ProductFilter
+                                categories={this.props.categories}
+                                ingredients={this.props.ingredients}
+                                handleUpdate={this.handleFilterUpdate}
+                                filters={this.state.filters}
+                            />
+                            <div>
+                                Looks like there are no meals matching your
+                                current filters! Please change your filter
+                                selection to find meals.
                             </div>
-                        ) : this.state.filters ? (
-                            <Fragment>
-                                <ProductFilter
-                                    categories={this.props.categories}
-                                    ingredients={this.props.ingredients}
-                                    handleUpdate={this.handleFilterUpdate}
-                                    filters={this.state.filters}
-                                />
-                                <div>
-                                    Looks like there are no meals matching your
-                                    current filters! Please change your filter
-                                    selection to find meals.
-                                </div>
-                            </Fragment>
-                        ) : (
-                            <div>Loading Meals ...</div>
-                        )}
-                    </div>
-                </article>
+                        </Fragment>
+                    ) : (
+                        <div>Loading Meals ...</div>
+                    )}
+                </ProductLoopWrapper>
             </Fragment>
         );
     }
