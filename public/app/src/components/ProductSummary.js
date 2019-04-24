@@ -25,6 +25,7 @@ const ProductSummary = ({ product }) => {
         price_html,
         short_description,
     } = product;
+    
     return (
         <div className="summary entry-summary">
             {rating_count > 0 && (

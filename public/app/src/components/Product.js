@@ -1,4 +1,5 @@
 import React, { Fragment } from "react";
+import { Helmet } from "react-helmet";
 
 import Breadcrumbs from "./Breadcrumbs";
 import ProductWrapper from "./ProductWrapper";
@@ -23,10 +24,14 @@ const Product = ({ match, products }) => {
 
     return (
         <Fragment>
+            <Helmet>
+                <meta charSet="utf-8" />
+                <title>{product.name}</title>
+            </Helmet>
             <Breadcrumbs type="product" category={product.categories[0]} />
             <ProductWrapper id={product.id} name={product.name}>
                 <div className="bbquick-product-wrapper">
-                    <ProductGallery images={images} />
+                    <ProductGallery id ={product.id} images={images} />
                     <ProductSummary product={product} />
                     <ProductIngredients ingredients={product.ingredients} />
                 </div>
