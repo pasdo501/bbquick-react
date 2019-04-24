@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
-import { Helmet } from "react-helmet";
 
+import SEO from "./SEO";
 import Breadcrumbs from "./Breadcrumbs";
 import ProductWrapper from "./ProductWrapper";
 import ProductGallery from "./ProductGallery";
@@ -22,12 +22,17 @@ const Product = ({ match, products }) => {
 
     const images = product.images.single_product;
 
+    // For SEO meta head link purposes
+    const fullUrl = `${window.bbq_react_data.wp_url}${match.url}`;
+    const encodedUrl = encodeURIComponent(fullUrl);
+
     return (
         <Fragment>
-            <Helmet>
-                <meta charSet="utf-8" />
-                <title>{product.name}</title>
-            </Helmet>
+            <SEO title={product.name}>
+                <link rel="canonical" href={fullUrl} />
+                <link rel="alternate" type="application/json+oembed" href={`${window.bbq_react_data.wp_url}/wp-json/oembed/1.0/embed?url=${encodedUrl}`} />
+                <link rel="alternate" type="text/xml+oembed" href={`${window.bbq_react_data.wp_url}/wp-json/oembed/1.0/embed?url=${encodedUrl}&format=xml`} />
+            </SEO>
             <Breadcrumbs type="product" category={product.categories[0]} />
             <ProductWrapper id={product.id} name={product.name}>
                 <div className="bbquick-product-wrapper">

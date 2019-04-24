@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from "react";
 
+import SEO from "./SEO";
 import Pagination from "./Pagination";
 
 import queryString from "query-string";
@@ -232,6 +233,7 @@ class ProductLoop extends Component {
 
         return (
             <Fragment>
+                <SEO title={categoryName} />
                 <Breadcrumbs
                     type={
                         categoryName.toLocaleLowerCase() === "shop"
