@@ -30,6 +30,7 @@ const Product = ({ match, products }) => {
         <Fragment>
             <SEO title={product.name}>
                 <link rel="canonical" href={fullUrl} />
+                <link rel="shortlink" href={`${window.bbq_react_data.wp_url}/?p=${product.id}`} />
                 <link rel="alternate" type="application/json+oembed" href={`${window.bbq_react_data.wp_url}/wp-json/oembed/1.0/embed?url=${encodedUrl}`} />
                 <link rel="alternate" type="text/xml+oembed" href={`${window.bbq_react_data.wp_url}/wp-json/oembed/1.0/embed?url=${encodedUrl}&format=xml`} />
             </SEO>
