@@ -73,8 +73,6 @@ class AddToCartButton extends Component {
             body: data,
         });
 
-        console.log(response);
-
         if (!response) {
             this.adding = false;
             return;
@@ -82,7 +80,6 @@ class AddToCartButton extends Component {
 
         if (response.ok) {
             const responseBody = await response.json();
-            console.log(responseBody);
             const addedEvent = new CustomEvent("added_to_cart", [
                 response.fragments,
                 response.cart_hash,

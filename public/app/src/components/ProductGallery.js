@@ -13,14 +13,6 @@ class ProductGallery extends Component {
     wrapperRef = React.createRef();
     zoomRef = React.createRef();
 
-    componentDidUpdate(prevProps, prevState) {
-        if (prevProps.id !== this.props.id) {
-            this.setState({
-                activeImageIndex: 0
-            })
-        }
-    }
-
     showZoomImage = () => {
         this.setState({
             zoomImageVisible: true,
@@ -88,8 +80,8 @@ class ProductGallery extends Component {
                                     className={`zoomImg${
                                         zoomImageVisible ? " active" : ""
                                     }`}
-                                    alt={images[activeImageIndex] ? images[activeImageIndex].alt : images[0].alt}
-                                    src={images[activeImageIndex] ? images[activeImageIndex].full_src : images[0].full_src}
+                                    alt={images[activeImageIndex].alt}
+                                    src={images[activeImageIndex].full_src}
                                     style={{
                                         top: -y,
                                         left: -x,

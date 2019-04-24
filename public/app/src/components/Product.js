@@ -31,13 +31,26 @@ const Product = ({ match, products }) => {
             <Breadcrumbs type="product" category={product.categories[0]} />
             <ProductWrapper id={product.id} name={product.name}>
                 <div className="bbquick-product-wrapper">
-                    <ProductGallery id ={product.id} images={images} />
-                    <ProductSummary product={product} />
+                    <ProductGallery
+                        key={`gallery-${product.id}`}
+                        images={images}
+                    />
+                    <ProductSummary
+                        key={`summary-${product.id}`}
+                        product={product}
+                    />
                     <ProductIngredients ingredients={product.ingredients} />
                 </div>
-                <RelatedProducts products={relatedProducts} />
+                <RelatedProducts
+                    key={`related-${product.id}`}
+                    products={relatedProducts}
+                />
             </ProductWrapper>
-            <Reviews id={product.id} reviewCount={product.rating_count} />
+            <Reviews
+                key={`reviews-${product.id}`}
+                id={product.id}
+                reviewCount={product.rating_count}
+            />
         </Fragment>
     );
 };

@@ -14,26 +14,6 @@ class Reviews extends Component {
         replyingTo: {},
     };
 
-    async componentDidUpdate(prevProps, prevState) {
-        if (prevProps.id !== this.props.id) {
-            let { reviews_data: reviews, nonce } = await getReviews(
-                this.props.id
-            );
-            
-            if (reviews !== 404) {
-                this.setState({
-                    reviews,
-                    nonce
-                });
-            } else {
-                this.setState({
-                    reviews: [],
-                    nonce
-                })
-            }
-        }
-    }
-
     async componentDidMount() {
         const { reviews_data: reviews, nonce } = await getReviews(
             this.props.id
