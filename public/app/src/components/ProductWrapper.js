@@ -16,6 +16,7 @@ class ProductWrapper extends Component {
 
     componentDidMount() {
         this.timeout = window.setTimeout(() => {
+            window.scrollTo(0, 0);
             this.setState({
                 visible: true
             })
