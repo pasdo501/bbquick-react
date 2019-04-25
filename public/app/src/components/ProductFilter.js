@@ -1,10 +1,18 @@
-import React, { Component } from "react";
+import React, { Component, createRef } from "react";
 import "./ProductFilter.css";
 
 class ProductFilter extends Component {
     state = {
         visible: false,
         filters: {},
+    };
+
+    closeFilters = (e) => {
+        if (this.boxRef.current && !this.boxRef.current.contains(e.target)) {
+            this.setState({
+                visible: false,
+            });
+        }
     };
 
     componentDidMount() {
@@ -17,6 +25,14 @@ class ProductFilter extends Component {
         this.setState({
             filters,
         });
+
+        this.boxRef = createRef();
+        document.body.addEventListener("click", this.closeFilters);
+    }
+
+    componentWillUnmount() {
+        // Clean up event listener
+        document.body.removeEventListener("click", this.closeFilters);
     }
 
     toggleSelect = () => {
@@ -96,7 +112,7 @@ class ProductFilter extends Component {
                         <div className="checkboxes">
                             <div className="checkboxes-inner">
                                 {validCategories.length && (
-                                    <div>
+                                    <div ref={this.boxRef}>
                                         {numFiltersSelected ? (
                                             <span
                                                 onClick={this.clearFilters}
