@@ -1,14 +1,17 @@
-# Plugin Name
-Contributors: https://github.com/pasdo501, https://github.com/carlaiau
-Donate link: https://octagonal.io/
-Tags: react, woocommerce
-Requires at least: 3.0.1
-Tested up to: 5.1.1
-Stable tag: 1.0.0
-License: GPLv2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+# BBQuick React
 
 React frontend plugin for BBQuick's woocommerce sections.
+
+* Contributors: 
+    * [Dominik Paschke](https://github.com/pasdo501)
+    * [Carl Aiau](https://github.com/carlaiau)
+* Plugin URL: https://octagonal.io/
+* Tags: react, woocommerce
+* Requires at least: 3.0.1
+* Tested up to: 5.1.1
+* Stable tag: 1.0.0
+* License: GPLv2 or later
+* Lcense URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 # Description
 
