@@ -14,8 +14,8 @@
  *
  * @wordpress-plugin
  * Plugin Name:       BBQuick React
- * Plugin URI:        https://github.com/pasdo501/bbquick-react
- * Description:       This is a short description of what the plugin does. It's displayed in the WordPress admin area.
+ * Plugin URI:        https://octagonal.io/
+ * Description:       React frontend plugin.
  * Version:           1.0.0
  * Author:            Dominik Paschke
  * Author URI:        https://octagonal.io/
