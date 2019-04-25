@@ -8,7 +8,12 @@ class ProductFilter extends Component {
     };
 
     closeFilters = (e) => {
-        if (this.boxRef.current && !this.boxRef.current.contains(e.target)) {
+        if (
+            this.boxRef.current &&
+            this.selectBox.current &&
+            e.target !== this.selectBox.current &&
+            !this.boxRef.current.contains(e.target)
+        ) {
             this.setState({
                 visible: false,
             });
@@ -27,6 +32,7 @@ class ProductFilter extends Component {
         });
 
         this.boxRef = createRef();
+        this.selectBox = createRef();
         document.body.addEventListener("click", this.closeFilters);
     }
 
@@ -105,7 +111,7 @@ class ProductFilter extends Component {
                                 : ""}
                         </option>
                     </select>
-                    <div className="overSelect" />
+                    <div className="overSelect" ref={this.selectBox} />
                 </div>
                 {visible && (
                     <div className="checkboxes-container">
