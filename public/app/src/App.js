@@ -1,12 +1,12 @@
 import React, { Component, Fragment } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
-import NavMenuLinks from "./NavMenuLinks";
-import ProductLoop from "./ProductLoop";
-import Product from "./Product";
+import NavMenuLinks from "./components/NavMenuLinks";
+import ProductLoop from "./components/ProductLoop";
+import Product from "./components/Product";
 
-import { getWcData } from "../util/api";
-import Loading from "./Loading";
+import { getWcData } from "./util/api";
+import Loading from "./components/Loading";
 
 class App extends Component {
     state = {
