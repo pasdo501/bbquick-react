@@ -383,9 +383,6 @@ class Bbquick_React_Public {
 	private function get_wc_data()
 	{
 		$categories = get_terms( ['taxonomy' => 'product_cat'] );
-		$categories = array_filter( $categories, function( $category ) {
-			return $category->slug !== 'uncategorized';
-		});
 
 		// Need category slugs for product args
 		$slugs = [];
@@ -402,7 +399,6 @@ class Bbquick_React_Public {
 			'posts_per_page' => -1,
 			'post_status' => 'publish',
 			'category' => $slugs,
-			'visibility' => 'catalog',
 			'stock_status' => 'instock',
 			'orderby' => 'name',
 			'order' => 'ASC'
@@ -464,7 +460,8 @@ class Bbquick_React_Public {
 				'date' => $product->get_date_created()->getTimestamp(),
 				'ingredients_ids' => $product_ingredients,
 				'ingredients' => $this->get_item_ingredient_list($product),
-				'related_products' => $product->get_related(4)
+				'related_products' => $product->get_related(4),
+				'catalog_visible' => $product->is_visible()
 			];
 		}
 
