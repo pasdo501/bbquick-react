@@ -13,12 +13,18 @@ const Product = ({ match, products }) => {
     const productSlug = match.params.slug;
 
     const product = products.find((product) => product.slug === productSlug);
-    const relatedIds = product.related_products.map((id) =>
-        Number.parseInt(id)
-    );
-    const relatedProducts = products.filter((product) =>
-        relatedIds.includes(product.id)
-    );
+    let relatedProducts;
+
+    if (product.related_products) {
+        const relatedIds = product.related_products.map((id) =>
+            Number.parseInt(id)
+        );
+        relatedProducts = products.filter((product) =>
+            relatedIds.includes(product.id)
+        );
+    } else {
+        relatedProducts = null;
+    }
 
     const images = product.images.single_product;
 
@@ -30,12 +36,31 @@ const Product = ({ match, products }) => {
         <Fragment>
             <SEO title={product.name}>
                 <link rel="canonical" href={fullUrl} />
-                <link rel="shortlink" href={`${window.bbq_react_data.wp_url}/?p=${product.id}`} />
-                <link rel="alternate" type="application/json+oembed" href={`${window.bbq_react_data.wp_url}/wp-json/oembed/1.0/embed?url=${encodedUrl}`} />
-                <link rel="alternate" type="text/xml+oembed" href={`${window.bbq_react_data.wp_url}/wp-json/oembed/1.0/embed?url=${encodedUrl}&format=xml`} />
+                <link
+                    rel="shortlink"
+                    href={`${window.bbq_react_data.wp_url}/?p=${product.id}`}
+                />
+                <link
+                    rel="alternate"
+                    type="application/json+oembed"
+                    href={`${
+                        window.bbq_react_data.wp_url
+                    }/wp-json/oembed/1.0/embed?url=${encodedUrl}`}
+                />
+                <link
+                    rel="alternate"
+                    type="text/xml+oembed"
+                    href={`${
+                        window.bbq_react_data.wp_url
+                    }/wp-json/oembed/1.0/embed?url=${encodedUrl}&format=xml`}
+                />
             </SEO>
             <Breadcrumbs type="product" category={product.categories[0]} />
-            <ProductWrapper key={`wrapper-${product.id}`} id={product.id} name={product.name}>
+            <ProductWrapper
+                key={`wrapper-${product.id}`}
+                id={product.id}
+                name={product.name}
+            >
                 <div className="bbquick-product-wrapper">
                     <ProductGallery
                         key={`gallery-${product.id}`}
@@ -47,10 +72,12 @@ const Product = ({ match, products }) => {
                     />
                     <ProductIngredients ingredients={product.ingredients} />
                 </div>
-                <RelatedProducts
-                    key={`related-${product.id}`}
-                    products={relatedProducts}
-                />
+                {relatedProducts && (
+                    <RelatedProducts
+                        key={`related-${product.id}`}
+                        products={relatedProducts}
+                    />
+                )}
             </ProductWrapper>
             <Reviews
                 key={`reviews-${product.id}`}

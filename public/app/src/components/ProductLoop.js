@@ -145,7 +145,7 @@ class ProductLoop extends Component {
         let currentCategoryName;
         let currentCategorySlug;
 
-        let otherTopLevelId;
+        let otherTopLevelIds = [];
 
         if (location.pathname === "/shop/") {
             currentCategoryName = "Shop";
@@ -161,7 +161,7 @@ class ProductLoop extends Component {
                 if (categories[key].parent === 0) {
                     // If not the category of the page currently being looked at,
                     // but no parent, must be a top level category
-                    otherTopLevelId = key;
+                    otherTopLevelIds.push(key);
                 }
             });
         }
@@ -171,6 +171,9 @@ class ProductLoop extends Component {
         }
 
         const categoryMeals = products.filter((product) => {
+            if (!product.catalog_visible) {
+                return false;
+            }
             if (currentCategoryName === "Shop") {
                 return true;
             }
@@ -178,7 +181,7 @@ class ProductLoop extends Component {
             let containsOtherTopLevelCat = false;
 
             const productCategories = product.categories.filter((category) => {
-                if (category.id.toString() === otherTopLevelId) {
+                if (otherTopLevelIds.includes(category.id.toString())) {
                     containsOtherTopLevelCat = true;
                 }
                 return (
@@ -243,7 +246,10 @@ class ProductLoop extends Component {
                     }
                     category={{ name: categoryName, slug: categorySlug }}
                 />
-                <ProductLoopWrapper key={categoryName} categoryName={categoryName}>
+                <ProductLoopWrapper
+                    key={categoryName}
+                    categoryName={categoryName}
+                >
                     {meals && meals.length ? (
                         <div className={`woocommerce columns-${columns}`}>
                             <p className="woocommerce-result-count">
