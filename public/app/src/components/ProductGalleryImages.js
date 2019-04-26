@@ -34,6 +34,7 @@ const ProductGalleryImages = ({ images, activeIndex }) => {
                 {(state) => (
                     <img
                         className="wp-post-image"
+                        src={image.full_src}
                         srcSet={image.src_set}
                         sizes="(max-width: 510px) 100vw 510px"
                         width="510"
