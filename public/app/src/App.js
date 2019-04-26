@@ -17,7 +17,7 @@ class App extends Component {
 
     async componentDidMount() {
         let { products, categories, ingredients } = await getWcData();
-        categories = Object.keys(categories).map(key => categories[key]);
+        categories = Object.values(categories);
 
         // Turn Categories into associative array with cat IDs as keys
         categories = categories.reduce((prev, curr) => {
