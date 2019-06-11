@@ -265,6 +265,13 @@ class ProductLoop extends Component {
                                 handleUpdate={this.handleFilterUpdate}
                                 filters={this.state.filters}
                             />
+                            <Pagination
+                                resultCount={resultsCount}
+                                perPage={perPage}
+                                currentPage={page}
+                                path={this.props.location.pathname}
+                                topPagination={true}
+                            />
                             <LoopProductWrapper
                                 products={meals}
                                 columns={columns}
