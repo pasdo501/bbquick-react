@@ -27,7 +27,7 @@ const ProductIngredients = ({ ingredients }) => {
                                             <strong>{product.quantity}</strong>x{" "}
                                         </Fragment>
                                     )}
-                                    {product.name}
+                                    <span dangerouslySetInnerHTML={{ __html: product.name }} />
                                 </Link>
                             </li>
                         ))}
